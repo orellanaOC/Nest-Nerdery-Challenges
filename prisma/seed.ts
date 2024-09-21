@@ -110,13 +110,13 @@ async function main() {
 			name: 'Solar Panel Charger',
 			price: 5999,
 			specification: 'Portable solar panel charger for your devices.',
-			stock: 50,
+			stock: 509,
 		},
 		{
 			name: 'Wind Turbine Generator',
 			price: 19999,
 			specification: 'Mini wind turbine for home use.',
-			stock: 15,
+			stock: 158,
 		},
 		{
 			name: 'Eco-Friendly Power Bank',
@@ -134,26 +134,26 @@ async function main() {
 			name: 'Hydro Power Generator',
 			price: 14999,
 			specification: 'Generate electricity from flowing water.',
-			stock: 10,
+			stock: 190,
 		},
 		{
 			name: 'Solar Backpack',
 			price: 8999,
 			specification:
 				'Backpack with built-in solar panel for device charging.',
-			stock: 30,
+			stock: 302,
 		},
 		{
 			name: 'Solar-Powered Fan',
 			price: 3499,
 			specification: 'Small portable fan powered by solar energy.',
-			stock: 75,
+			stock: 745,
 		},
 		{
 			name: 'Solar Oven',
 			price: 29999,
 			specification: 'Cook your meals using solar energy.',
-			stock: 5,
+			stock: 450,
 		},
 		{
 			name: 'Wind-Up Flashlight',
@@ -165,7 +165,7 @@ async function main() {
 			name: 'BioLite CampStove',
 			price: 14999,
 			specification: 'Wood-burning stove that generates electricity.',
-			stock: 40,
+			stock: 430,
 		},
 		{
 			name: 'Solar Lantern',
@@ -184,13 +184,13 @@ async function main() {
 			price: 49999,
 			specification:
 				'Energy-efficient water heater powered by solar energy.',
-			stock: 8,
+			stock: 829,
 		},
 		{
 			name: 'Wind Turbine Kit',
 			price: 29999,
 			specification: 'DIY wind turbine kit for generating electricity.',
-			stock: 12,
+			stock: 129,
 		},
 		{
 			name: 'Solar Power Bank with Light',
@@ -262,7 +262,7 @@ async function main() {
 			price: 29999,
 			specification:
 				'Tent equipped with solar panels for charging your gadgets.',
-			stock: 10,
+			stock: 100,
 		},
 		{
 			name: 'Eco-Friendly Solar Flashlight',
@@ -274,7 +274,7 @@ async function main() {
 			name: 'Solar Charging Station',
 			price: 89999,
 			specification: 'Large solar station for charging multiple devices.',
-			stock: 5,
+			stock: 500,
 		},
 		{
 			name: 'Wind-Powered Fan',
@@ -292,7 +292,7 @@ async function main() {
 			name: 'Solar-Powered Lawn Mower',
 			price: 79999,
 			specification: 'Lawn mower powered by solar panels.',
-			stock: 12,
+			stock: 128,
 		},
 		{
 			name: 'Solar LED Bike Light',
@@ -324,7 +324,7 @@ async function main() {
 			name: 'Wind-Powered LED Lamp',
 			price: 3299,
 			specification: 'LED lamp powered by wind energy.',
-			stock: 120,
+			stock: 12,
 		},
 	];
 
@@ -339,6 +339,94 @@ async function main() {
 			},
 		});
 	}
+
+	async function generateMockData() {
+		const productCount = await prisma.product.count();
+
+		// Create 10 users with roleId = 1 (Client)
+		for (let i = 1; i <= 10; i++) {
+			const user = await prisma.user.create({
+				data: {
+					email: `client${i}@example.com`,
+					password: `password${i}`,
+					name: `Client ${i}`,
+					roleId: 1, // Client role
+				},
+			});
+
+			// Create a shopping cart for each user
+			let total = 0;
+
+			const shoppingCart = await prisma.shoppingCart.create({
+				data: {
+					userId: user.id,
+				},
+			});
+
+			// Add 10 lines to the shopping cart (with random products)
+			for (let j = 1; j <= 10; j++) {
+				const productId = Math.floor(Math.random() * productCount) + 1;
+
+				const existingLine = await prisma.shoppingCartLine.findFirst({
+					where: {
+						shoppingCartId: shoppingCart.userId,
+						productId: productId,
+					},
+				});
+
+				if (!existingLine) {
+					const product = await prisma.product.findUnique({
+						where: { id: productId },
+					});
+					const quantity = Math.floor(Math.random() * 5) + 1;
+
+					total += product.price * quantity;
+
+					await prisma.shoppingCartLine.create({
+						data: {
+							shoppingCartId: shoppingCart.userId,
+							productId: productId,
+							productQuantity: quantity,
+						},
+					});
+				}
+			}
+
+			await prisma.shoppingCart.update({
+				where: {
+					userId: shoppingCart.userId,
+				},
+				data: {
+					total: total,
+				},
+			});
+
+			const firstProductId = ((i - 1) * 4 + 1) % productCount;
+
+			for (let k = 0; k < 4; k++) {
+				const productId = ((firstProductId + k) % productCount) + 1;
+
+				const existingLike = await prisma.likeProduct.findUnique({
+					where: {
+						userId_productId: {
+							userId: user.id,
+							productId: productId,
+						},
+					},
+				});
+
+				if (!existingLike) {
+					await prisma.likeProduct.create({
+						data: {
+							userId: user.id,
+							productId: productId,
+						},
+					});
+				}
+			}
+		}
+	}
+	await generateMockData();
 }
 
 // execute the main function

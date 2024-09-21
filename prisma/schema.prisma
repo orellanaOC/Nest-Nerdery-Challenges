@@ -67,8 +67,8 @@ model Product {
 model LikeProduct {
   @@map("like_products")
 
-  userId    Int     @unique         @map("user_id")
-  productId Int     @unique         @map("product_id")
+  userId    Int              @map("user_id")
+  productId Int              @map("product_id")
 
   // Relations
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
