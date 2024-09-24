@@ -8,5 +8,6 @@ import { PicturesModule } from './pictures/pictures.module';
 @Module({
 	imports: [CategoriesModule, PicturesModule],
 	providers: [ProductsService, ProductsResolver, PrismaService],
+	exports: [ProductsService],
 })
 export class ProductsModule {}

@@ -12,7 +12,7 @@ export class ShoppingCartLine {
     @Field(() => Int)
     shoppingCartId: number;
 
-    @Field(() => Product)
+    @Field()
     product: Product;
 
     @Field(() => Int)

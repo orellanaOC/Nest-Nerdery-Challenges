@@ -10,12 +10,9 @@ import { ProductsModule } from './products/products.module';
 import { ProductsService } from './products/products/products.service';
 import { ProductsResolver } from './products/products/products.resolver';
 import { CategoriesModule } from './products/categories/categories.module';
-import { ShoppingCartsService } from './shopping-cart/shopping-cart/shopping-cart.service';
-import { ShoppingCartResolver } from './shopping-cart/shopping-cart/shopping-cart.resolver';
-import { ShoppingCartLinesResolver } from './shopping-cart/shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.resolver';
-import { ShoppingCartLinesService } from './shopping-cart/shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.service';
 import { PicturesResolver } from './products/pictures/pictures.resolver';
 import { PicturesService } from './products/pictures/pictures.service';
+import { ShoppingCartsModule } from './shopping-cart/shopping-carts.module';
 
 @Module({
 	imports: [
@@ -23,6 +20,7 @@ import { PicturesService } from './products/pictures/pictures.service';
 		ArticlesModule,
 		ProductsModule,
 		CategoriesModule,
+		ShoppingCartsModule,
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
@@ -36,10 +34,6 @@ import { PicturesService } from './products/pictures/pictures.service';
 		ProductsResolver,
 		PicturesService,
 		PicturesResolver,
-		ShoppingCartLinesResolver,
-		ShoppingCartLinesService,
-		ShoppingCartsService,
-		ShoppingCartResolver,
 	],
 })
 export class AppModule {}

@@ -64,6 +64,7 @@ type Mutation {
   toggleProductEnableStatus(id: Int!, enable: Boolean!): Product!
   likeProduct(productId: Float!): Message!
   createPicture(data: CreatePictureDto!): Picture!
+  updateShoppingCart(shoppingCartLineInput: ShoppingCartLineInput!): ShoppingCart!
 }
 
 input CreateProductDto {
@@ -91,4 +92,17 @@ input UpdateProductDto {
 input CreatePictureDto {
   productId: Int!
   imageUrl: String!
+}
+
+input ShoppingCartLineInput {
+  product: ProductInput!
+  productQuantity: Int!
+}
+
+input ProductInput {
+  id: Int!
+  name: String!
+  price: Int!
+  stock: Int!
+  category: CategoryInput!
 }

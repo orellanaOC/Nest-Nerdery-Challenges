@@ -3,7 +3,7 @@
 
 import { InputType, Field, Int } from '@nestjs/graphql';
 import { IsNotEmpty, IsInt } from 'class-validator';
-import { CategoryInput } from 'src/products/categories/entities/category.entity';
+import { CategoryInput } from 'src/products/categories/dto/category-input.dto';
 
 @InputType()
 export class CreateProductDto {
