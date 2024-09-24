@@ -2,16 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Product {
+type Category {
   id: Int!
   name: String!
-  specification: String
-  price: Int!
-  stock: Int!
-  categoryId: Int!
-  enable: Boolean!
+}
+
+type Picture {
+  id: Int!
+  productId: Int!
+  imageUrl: String!
   createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 """
@@ -19,15 +19,52 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Product {
+  id: Int!
+  name: String!
+  specification: String
+  price: Int!
+  stock: Int!
+  category: Category!
+  enable: Boolean!
+  picture: [Picture]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Message {
+  status: String!
+  message: String!
+}
+
+type ShoppingCartLine {
+  id: Int!
+  shoppingCartId: Int!
+  product: Product!
+  productQuantity: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ShoppingCart {
+  id: Int!
+  totalAmount: Int!
+  lines: [ShoppingCartLine]!
+}
+
 type Query {
   products: [Product!]!
   product(id: Int!): Product
+  findPicturesByProductId(productId: Int!): [Picture!]!
+  getShoppingCart: ShoppingCart!
 }
 
 type Mutation {
   createProduct(data: CreateProductDto!): Product!
   updateProduct(id: Int!, data: UpdateProductDto!): Product!
   toggleProductEnableStatus(id: Int!, enable: Boolean!): Product!
+  likeProduct(productId: Float!): Message!
+  createPicture(data: CreatePictureDto!): Picture!
 }
 
 input CreateProductDto {
@@ -35,7 +72,12 @@ input CreateProductDto {
   specification: String
   price: Int!
   stock: Int!
-  categoryId: Int!
+  category: CategoryInput!
+}
+
+input CategoryInput {
+  id: Int!
+  name: String!
 }
 
 input UpdateProductDto {
@@ -43,6 +85,11 @@ input UpdateProductDto {
   specification: String
   price: Int
   stock: Int
-  categoryId: Int
+  category: CategoryInput
   enable: Boolean
+}
+
+input CreatePictureDto {
+  productId: Int!
+  imageUrl: String!
 }

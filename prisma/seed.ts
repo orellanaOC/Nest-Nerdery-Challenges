@@ -329,7 +329,7 @@ async function main() {
 	];
 
 	for (const product of mockProducts) {
-		await prisma.product.create({
+		const createdProduct = await prisma.product.create({
 			data: {
 				name: product.name,
 				specification: product.specification,
@@ -338,6 +338,17 @@ async function main() {
 				categoryId: Math.floor(Math.random() * 10) + 1, // Generating random category ID between 1 and 10
 			},
 		});
+
+		const random = Math.floor(Math.random() * 6);
+
+		for (let i = 1; i <= random; i++) {
+			await prisma.picture.create({
+				data: {
+					imageUrl: `https://example.com/image${createdProduct.id}.jpg`,
+					productId: createdProduct.id,
+				},
+			});
+		}
 	}
 
 	async function generateMockData() {

@@ -59,9 +59,10 @@ model Product {
 
   // Relations
   category          Category    @relation(fields: [categoryId], references: [id])
-  ShoppingCartLine  ShoppingCartLine[]
-  OrderLine         OrderLine[]
-  LikeProduct       LikeProduct[]
+  shoppingCartLine  ShoppingCartLine[]
+  orderLine         OrderLine[]
+  likeProduct       LikeProduct[]
+  picture           Picture[]
 }
 
 model LikeProduct {
@@ -103,6 +104,19 @@ model ShoppingCartLine {
   product       Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
   shoppingCart  ShoppingCart @relation(fields: [shoppingCartId], references: [userId], onDelete: Cascade)
 }
+
+model Picture {
+  @@map("pictures")
+
+  id        Int     @id @default(autoincrement())
+  productId         Int                           @map("product_id")
+  imageUrl          String                        @map("image_url")
+  createdAt         DateTime  @default(now())     @map("created_at")
+
+   // Relations
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
 
 enum OrderStatus {
   PENDING
