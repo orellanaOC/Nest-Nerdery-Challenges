@@ -11,11 +11,4 @@ export class PicturesResolver {
 	createPicture(@Args('data') data: CreatePictureDto) {
 		return this.picturesService.create(data);
 	}
-
-	@Query(() => [Picture])
-	findPicturesByProductId(
-		@Args('productId', { type: () => Int }) productId: number,
-	) {
-		return this.picturesService.findAllByProductId(productId);
-	}
 }

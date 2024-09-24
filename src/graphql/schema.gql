@@ -55,8 +55,7 @@ type ShoppingCart {
 type Query {
   products: [Product!]!
   product(id: Int!): Product
-  findPicturesByProductId(productId: Int!): [Picture!]!
-  getShoppingCart: ShoppingCart!
+  myShoppingCart: ShoppingCart!
 }
 
 type Mutation {
