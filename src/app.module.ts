@@ -6,10 +6,16 @@ import { ArticlesModule } from './articles/articles.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { ProductsModule } from './productModule/products.module';
-import { ProductsService } from './productModule/products/products.service';
-import { ProductsResolver } from './productModule/products/products.resolver';
-import { CategoriesModule } from './productModule/categories/categories.module';
+import { ProductsModule } from './products/products.module';
+import { ProductsService } from './products/products/products.service';
+import { ProductsResolver } from './products/products/products.resolver';
+import { CategoriesModule } from './products/categories/categories.module';
+import { ShoppingCartsService } from './shopping-cart/shopping-cart/shopping-cart.service';
+import { ShoppingCartResolver } from './shopping-cart/shopping-cart/shopping-cart.resolver';
+import { ShoppingCartLinesResolver } from './shopping-cart/shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.resolver';
+import { ShoppingCartLinesService } from './shopping-cart/shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.service';
+import { PicturesResolver } from './products/pictures/pictures.resolver';
+import { PicturesService } from './products/pictures/pictures.service';
 
 @Module({
 	imports: [
@@ -24,6 +30,16 @@ import { CategoriesModule } from './productModule/categories/categories.module';
 		}),
 	],
 	controllers: [AppController],
-	providers: [AppService, ProductsService, ProductsResolver],
+	providers: [
+		AppService,
+		ProductsService,
+		ProductsResolver,
+		PicturesService,
+		PicturesResolver,
+		ShoppingCartLinesResolver,
+		ShoppingCartLinesService,
+		ShoppingCartsService,
+		ShoppingCartResolver,
+	],
 })
 export class AppModule {}
