@@ -6,7 +6,6 @@ import { ShoppingCartLineInput } from '../shopping-cart-lines/dto/shopping-cart-
 @Resolver()
 export class ShoppingCartResolver {
 	constructor(private readonly shoppingCartService: ShoppingCartsService) {}
-
 	// TODO: add the header requirement
 	@Query(() => ShoppingCart)
 	async myShoppingCart(/*@Context('req') req: any*/): Promise<ShoppingCart> {

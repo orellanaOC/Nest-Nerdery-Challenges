@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PicturesService } from 'src/products/pictures/pictures.service';
 import { ShoppingCartLine } from '../entities/shopping-cart-line.entity';
 import { ShoppingCartLineInput } from '../dto/shopping-cart-line-input.dto';
+import { ProductsService } from 'src/products/products/products.service';
 
 @Injectable()
 export class ShoppingCartLinesService {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly picturesService: PicturesService,
+		private readonly productsService: ProductsService,
 	) {}
 
 	async updateShoppingCartLines(
@@ -70,7 +70,7 @@ export class ShoppingCartLinesService {
 
 		return Promise.all(
 			lines.map(async (line) => {
-				const pictures = await this.picturesService.findAllByProductId(
+				const product = await this.productsService.findOne(
 					line.product.id,
 				);
 
@@ -80,26 +80,7 @@ export class ShoppingCartLinesService {
 					shoppingCartId: line.shoppingCartId,
 					createdAt: line.createdAt,
 					updatedAt: line.updatedAt,
-					product: {
-						id: line.product.id,
-						enable: line.product.enable,
-						name: line.product.name,
-						price: line.product.price,
-						stock: line.product.stock,
-						specification: line.product.specification,
-						createdAt: line.product.createdAt,
-						updatedAt: line.product.updatedAt,
-						category: {
-							id: line.product.category.id,
-							name: line.product.category.name,
-						},
-						picture: pictures.map((picture) => ({
-							id: picture.id,
-							productId: picture.productId,
-							imageUrl: picture.imageUrl,
-							createdAt: picture.createdAt,
-						})),
-					},
+					product: product,
 				};
 			}),
 		);

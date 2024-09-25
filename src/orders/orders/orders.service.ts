@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderLinesService } from '../order-lines/order-lines/order-lines.service';
 import { ShoppingCartsService } from 'src/shopping-cart/shopping-cart/shopping-cart.service';
@@ -61,5 +61,32 @@ export class OrdersService {
 		//await this.shoppingCartService.clearCart(userId);
 
 		return orderWithLines;
+	}
+
+	async findOrderById(id: number): Promise<Order> {
+		const order = await this.prisma.order.findUnique({
+			where: { id },
+			include: {
+				lines: true,
+			},
+		});
+
+		if (!order) {
+			throw new NotFoundException(
+				'Shopping cart not found for this user',
+			);
+		}
+
+		const lines = await this.orderLineService.getLinesByOrderId(id);
+
+		return {
+			id,
+			userId: order.userId,
+			status: order.status,
+			total: order.total,
+			createdAt: order.createdAt,
+			updatedAt: order.updatedAt,
+			lines: lines,
+		};
 	}
 }

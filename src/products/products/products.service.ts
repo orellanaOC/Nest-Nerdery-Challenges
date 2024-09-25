@@ -9,7 +9,6 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { CategoriesService } from '../categories/categories.service';
 import { Message } from '../messages/entities/message.entity';
-import { Category } from '../categories/entities/category.entity';
 
 @Injectable()
 export class ProductsService {

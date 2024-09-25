@@ -9,6 +9,7 @@ import { Message } from '../messages/entities/message.entity';
 export class ProductsResolver {
 	constructor(private productService: ProductsService) {}
 
+	// TODO: add pagination to the query of products
 	@Query(() => [Product])
 	async products() {
 		return this.productService.getAllProducts();
