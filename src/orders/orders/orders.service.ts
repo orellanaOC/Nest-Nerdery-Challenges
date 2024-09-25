@@ -89,4 +89,25 @@ export class OrdersService {
 			lines: lines,
 		};
 	}
+
+	async orders(userId?: number, status?: OrderStatus) {
+		return this.prisma.order.findMany({
+			where: {
+				...(userId ? { userId } : {}),
+				...(status ? { status } : {}),
+			},
+			include: {
+				lines: {
+					include: {
+						product: {
+							include: {
+								category: true,
+								picture: true,
+							},
+						},
+					},
+				},
+			},
+		});
+	}
 }

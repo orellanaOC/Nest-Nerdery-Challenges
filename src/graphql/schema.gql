@@ -65,17 +65,29 @@ type OrderLine {
 type Order {
   id: Int!
   userId: Int!
-  status: String!
+  status: OrderStatus!
   total: Int!
   lines: [OrderLine]!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
+"""
+Represents the current state of an order, indicating whether it is pending, successfully completed, or failed due to an issue.
+"""
+enum OrderStatus {
+  PENDING
+  SUCCEDED
+  FAILED
+}
+
 type Query {
   products: [Product!]!
   product(id: Int!): Product
   myShoppingCart: ShoppingCart!
+  order(id: Int!): Order!
+  myOrders(status: OrderStatus): [Order!]!
+  orders(status: OrderStatus, userId: Int): [Order!]!
 }
 
 type Mutation {
