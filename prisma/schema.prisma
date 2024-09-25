@@ -127,13 +127,16 @@ enum OrderStatus {
 model Order {
   @@map("orders")
 
-  id          Int             @id @default(autoincrement())
-  userId      Int                                 @map("user_id")
-  orderStatus OrderStatus     @default(PENDING)   @map("order_status")
+  id                Int             @id @default(autoincrement())
+  userId            Int                                 @map("user_id")
+  status            OrderStatus     @default(PENDING)
+  total             Int                             
+  createdAt         DateTime        @default(now())     @map("created_at")
+  updatedAt         DateTime        @updatedAt          @map("updated_at")
 
   // Relations
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  OrderLine   OrderLine[]
+  lines       OrderLine[]
 }
 
 model OrderLine {

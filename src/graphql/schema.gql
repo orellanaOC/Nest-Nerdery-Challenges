@@ -52,6 +52,26 @@ type ShoppingCart {
   lines: [ShoppingCartLine]!
 }
 
+type OrderLine {
+  id: Int!
+  orderId: Int!
+  product: Product!
+  productQuantity: Int!
+  pricePerItem: Int!
+  subTotal: Int!
+  createdAt: DateTime!
+}
+
+type Order {
+  id: Int!
+  userId: Int!
+  status: String!
+  total: Int!
+  lines: [OrderLine]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type Query {
   products: [Product!]!
   product(id: Int!): Product
@@ -65,6 +85,7 @@ type Mutation {
   likeProduct(productId: Float!): Message!
   createPicture(data: CreatePictureDto!): Picture!
   updateShoppingCart(shoppingCartLineInput: ShoppingCartLineInput!): ShoppingCart!
+  checkouts: Order!
 }
 
 input CreateProductDto {

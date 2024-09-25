@@ -76,4 +76,10 @@ export class ShoppingCartsService {
 			lines: updatedLines,
 		};
 	}
+
+	async clearShoppingCart(userId: number) {
+		await this.prisma.shoppingCartLine.deleteMany({
+			where: { shoppingCartId: userId },
+		});
+	}
 }
