@@ -4,15 +4,19 @@ import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Message } from '../messages/entities/message.entity';
+import { ProductConnection } from './dto/product-connection.entity';
+import { PaginationInput } from 'src/pagination/dto/pagination-input.dto';
 
 @Resolver(() => Product)
 export class ProductsResolver {
 	constructor(private productService: ProductsService) {}
 
-	// TODO: add pagination to the query of products
-	@Query(() => [Product])
-	async products() {
-		return this.productService.getAllProducts();
+	@Query(() => ProductConnection)
+	async products(
+		// prettier-ignore
+		@Args('pagination', { type: () => PaginationInput, nullable: true }) pagination: PaginationInput,
+	): Promise<ProductConnection> {
+		return this.productService.getAllProducts(pagination);
 	}
 
 	@Query(() => Product, { nullable: true })

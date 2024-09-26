@@ -4,9 +4,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductsService } from './products/products.service';
 import { CategoriesModule } from './categories/categories.module';
 import { PicturesModule } from './pictures/pictures.module';
+import { PaginationModule } from 'src/pagination/pagination.module';
 
 @Module({
-	imports: [CategoriesModule, PicturesModule],
+	imports: [CategoriesModule, PicturesModule, PaginationModule],
 	providers: [ProductsService, ProductsResolver, PrismaService],
 	exports: [ProductsService],
 })

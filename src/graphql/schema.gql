@@ -37,6 +37,23 @@ type Message {
   message: String!
 }
 
+type ProductEdge {
+  cursor: String!
+  node: Product!
+}
+
+type PageInfoModel {
+  endCursor: String
+  startCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+type ProductConnection {
+  edges: [ProductEdge]!
+  pageInfo: PageInfoModel!
+}
+
 type ShoppingCartLine {
   id: Int!
   shoppingCartId: Int!
@@ -81,13 +98,36 @@ enum OrderStatus {
   FAILED
 }
 
+type OrderEdge {
+  cursor: String!
+  node: Order!
+}
+
+type OrderConnection {
+  edges: [OrderEdge]!
+  pageInfo: PageInfoModel!
+}
+
 type Query {
-  products: [Product!]!
+  products(pagination: PaginationInput): ProductConnection!
   product(id: Int!): Product
   myShoppingCart: ShoppingCart!
   order(id: Int!): Order!
-  myOrders(status: OrderStatus): [Order!]!
-  orders(status: OrderStatus, userId: Int): [Order!]!
+  myOrders(filter: OrderFilter): OrderConnection!
+  orders(filter: OrderFilter): OrderConnection!
+}
+
+input PaginationInput {
+  first: Int
+  after: String
+  last: Int
+  before: String
+}
+
+input OrderFilter {
+  status: OrderStatus
+  pagination: PaginationInput
+  userId: Int
 }
 
 type Mutation {

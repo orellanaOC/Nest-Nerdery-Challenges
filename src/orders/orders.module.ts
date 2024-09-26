@@ -4,9 +4,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { OrdersService } from './orders/orders.service';
 import { OrdersResolver } from './orders/orders.resolver';
 import { ShoppingCartsModule } from 'src/shopping-cart/shopping-carts.module';
+import { PaginationModule } from 'src/pagination/pagination.module';
 
 @Module({
-	imports: [OrderLinesModule, ShoppingCartsModule],
+	imports: [PaginationModule, OrderLinesModule, ShoppingCartsModule],
 	providers: [PrismaService, OrdersService, OrdersResolver],
 	exports: [OrdersService],
 })
