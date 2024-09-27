@@ -9,13 +9,13 @@ import { PaginationInput } from '../dto/pagination-input.dto';
 import { Prisma } from '@prisma/client';
 
 export class PaginationService {
-    async paginate<T, FindManyArgs extends { orderBy?: any, include?: any }>(
+    async paginate<T, FindManyArgs extends { where?: any, orderBy?: any, include?: any }>(
         findMany: (args: FindManyArgs) => Promise<T[]>,
         paginationInput: PaginationInput,
         cursorField: keyof T,
-        whereClause?: FindManyArgs extends { where: infer W } ? W : undefined,
+        whereClause?: FindManyArgs['where'],
         orderByClause?: FindManyArgs['orderBy'],
-        includeClause?: Prisma.ProductInclude,
+        includeClause?: FindManyArgs['include'],
     ): Promise<IPaginatedType<T>> {
         const { first, after, last, before } = paginationInput;
 
@@ -52,7 +52,9 @@ export class PaginationService {
         // Determine if there are more pages in both directions
         const hasNextPage = endCursor
             ? !!(await findMany({
-                where: whereClause,
+                where: whereClause
+                ? { ...whereClause as object }
+                : { [cursorField]: { gt: edges[edges.length - 1][cursorField] } },
                 cursor: { [cursorField]: parseInt(endCursor, 10) },
                 skip: 1,
                 take: 1,
@@ -63,7 +65,9 @@ export class PaginationService {
 
         const hasPreviousPage = startCursor
             ? !!(await findMany({
-                where: whereClause,
+                where: whereClause
+                ? { ...whereClause as object }
+                : { [cursorField]: { lt: edges[0][cursorField] } },
                 cursor: { [cursorField]: parseInt(startCursor, 10) },
                 skip: 1,
                 take: 1,

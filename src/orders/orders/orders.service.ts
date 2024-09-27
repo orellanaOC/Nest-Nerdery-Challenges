@@ -6,7 +6,7 @@ import { Order } from '../entities/order.entity';
 import { Prisma } from '@prisma/client';
 import { OrderFilter } from '../dto/order-filter-input.dto';
 import { OrderConnection } from '../dto/order-connection.entity';
-import { PageInfoModel } from 'src/pagination/entities/page-info.entity';
+import { PaginationService } from 'src/pagination/pagination/pagination.service';
 
 @Injectable()
 export class OrdersService {
@@ -14,6 +14,7 @@ export class OrdersService {
 		private readonly prisma: PrismaService,
 		private readonly orderLineService: OrderLinesService,
 		private readonly shoppingCartService: ShoppingCartsService,
+		private readonly paginationService: PaginationService,
 	) {}
 
 	async createOrderFromCart(userId: number): Promise<Order> {
@@ -95,40 +96,22 @@ export class OrdersService {
 
 	async orders(filter?: OrderFilter): Promise<OrderConnection> {
 		const { status, pagination, userId } = filter || {};
-		const { first, after, last, before } = pagination || {};
+		// prettier-ignore
+		const whereClause: Prisma.OrderWhereInput | undefined =
+			userId || status
+				? {
+					userId: userId || undefined,
+					status: status || undefined,
+				}
+				: undefined;
 
-		// Building Prisma Filters
-		const whereClause: Prisma.OrderWhereInput = {
-			userId,
-			status: status || undefined,
-		};
-
-		// Convert Cursors to Prisma Cursors
-		let cursor = after ? { id: Number(after) } : undefined;
-
-		// If you are paging backwards (with 'before'), the cursor changes
-		if (before) {
-			cursor = { id: Number(before) };
-		}
-
-		// Define the amount of elements to take
-		let take = first || last || 10;
-		if (last) {
-			take = -take;
-		}
-
-		const skip = cursor ? 1 : 0;
-
-		// Get filtered and paginated orders
-		const orders = await this.prisma.order.findMany({
-			where: whereClause,
-			orderBy: {
-				id: 'asc',
-			},
-			take,
-			skip,
-			cursor,
-			include: {
+		return this.paginationService.paginate<Order, Prisma.OrderFindManyArgs>(
+			this.prisma.order.findMany.bind(this.prisma.order),
+			pagination,
+			'id',
+			whereClause,
+			{ createdAt: 'asc' } as Prisma.OrderOrderByWithRelationInput,
+			{
 				lines: {
 					include: {
 						product: {
@@ -140,43 +123,6 @@ export class OrdersService {
 					},
 				},
 			},
-		});
-
-		// Calculate cursors for pagination
-		const startCursor = orders.length > 0 ? orders[0].id.toString() : null;
-		const endCursor =
-			orders.length > 0 ? orders[orders.length - 1].id.toString() : null;
-
-		// Calculate if there are more pages
-		const hasNextPage = !!(await this.prisma.order.findFirst({
-			where: whereClause,
-			cursor: { id: Number(endCursor) },
-			skip: 1,
-			orderBy: { id: 'asc' },
-		}));
-
-		const hasPreviousPage = !!(await this.prisma.order.findFirst({
-			where: whereClause,
-			cursor: { id: Number(startCursor) },
-			skip: 1,
-			orderBy: { id: 'asc' }, // To search backwards
-		}));
-
-		const pageInfo: PageInfoModel = {
-			startCursor,
-			endCursor,
-			hasNextPage,
-			hasPreviousPage,
-		};
-
-		const edges = orders.map((order) => ({
-			cursor: order.id.toString(),
-			node: order,
-		}));
-
-		return {
-			edges,
-			pageInfo,
-		};
+		);
 	}
 }
