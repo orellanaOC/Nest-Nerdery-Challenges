@@ -1,71 +1,77 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { Prisma } from '@prisma/client';
 import {
 	IPageInfoModel,
 	IPaginatedType,
 } from '../entities/pagination.interface';
 import { PaginationInput } from '../dto/pagination-input.dto';
+import { Prisma } from '@prisma/client';
 
 export class PaginationService {
-    async paginate<T>(
-        findMany: (args: Prisma.OrderFindManyArgs) => Promise<T[]>,
+    async paginate<T, FindManyArgs extends { orderBy?: any, include?: any }>(
+        findMany: (args: FindManyArgs) => Promise<T[]>,
         paginationInput: PaginationInput,
         cursorField: keyof T,
-        whereClause?: Prisma.OrderWhereInput,
-        orderByClause?: Prisma.OrderOrderByWithRelationInput,
+        whereClause?: FindManyArgs extends { where: infer W } ? W : undefined,
+        orderByClause?: FindManyArgs['orderBy'],
+        includeClause?: Prisma.ProductInclude,
     ): Promise<IPaginatedType<T>> {
         const { first, after, last, before } = paginationInput;
 
-        // Convert Cursors to Prisma Cursors
-        const cursorAfter = after ? { id : Number(after) } : undefined;
-        const cursorBefore = before ? { id : Number(before) } : undefined;
+        let cursor = after ? { [cursorField]: parseInt(after, 10) } : undefined;
 
-        // Determine the order direction based on whether `before` is being used
-        const orderDirection = before ? 'desc' : 'asc';
+        // If paginating backwards with 'before', set the cursor accordingly
+        if (before) {
+            cursor = { [cursorField]: parseInt(before, 10) };
+        }
 
-        // Define the number of elements to take
-        const take = first || last || 10;
-        const skip = after || before ? 1 : 0;
+        // Define the direction of ordering and the number of elements to take
+        let take = first || last || 10;
+        if (last) {
+            take = -take; // A negative take value will paginate backwards
+        }
 
-        // Getting items using cursors and filters
+        // Skip one item to avoid including the item at the cursor itself
+        const skip = cursor ? 1 : 0;
+
+        // Fetch items using the cursor and filters
         const edges = await findMany({
             where: whereClause,
-            orderBy: orderByClause || { [cursorField]: orderDirection },
+            orderBy: orderByClause || { [cursorField]: 'asc' },
             take,
             skip,
-            cursor: after ? cursorAfter : cursorBefore,
-		});
+            cursor,
+            include: includeClause,
+        } as unknown as FindManyArgs);
 
-		// Create cursors for the first and last elements
+        // Create cursors for the first and last elements
         const startCursor = edges.length > 0 ? String(edges[0][cursorField]) : null;
         const endCursor = edges.length > 0 ? String(edges[edges.length - 1][cursorField]) : null;
 
-        // Check if there are more pages forward and back
+        // Determine if there are more pages in both directions
         const hasNextPage = endCursor
-            ? (await findMany({
-                where: { 
-                    ...whereClause, 
-                    [cursorField]: { gt: edges[edges.length - 1][cursorField] } 
-                },
-                orderBy: { [cursorField]: 'asc' },
+            ? !!(await findMany({
+                where: whereClause,
+                cursor: { [cursorField]: parseInt(endCursor, 10) },
+                skip: 1,
                 take: 1,
-            })).length > 0
+                orderBy: { [cursorField]: 'asc' },
+                include: includeClause,
+            } as unknown as FindManyArgs)).length
             : false;
 
         const hasPreviousPage = startCursor
-            ? (await findMany({
-                where: { 
-                    ...whereClause, 
-                    [cursorField]: { lt: edges[0][cursorField] } 
-                },
-                orderBy: { [cursorField]: 'desc' },
+            ? !!(await findMany({
+                where: whereClause,
+                cursor: { [cursorField]: parseInt(startCursor, 10) },
+                skip: 1,
                 take: 1,
-            })).length > 0
+                orderBy: { [cursorField]: 'desc' }, // Searching backwards
+                include: includeClause,
+            } as unknown as FindManyArgs)).length
             : false;
 
-        // Create page information
         const pageInfo: IPageInfoModel = {
             startCursor,
             endCursor,

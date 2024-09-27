@@ -5,15 +5,17 @@ import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
 export class PageInfoModel {
+     // Cursor of the last/first element of the current page
     @Field(() => String, { nullable: true })
-    endCursor?: string; // Cursor of the last element 
+    endCursor?: string;
     
     @Field(() => String, { nullable: true })
-    startCursor?: string; // Cursor of the first element 
+    startCursor?: string;
+    
+    // Indicates if there are more elements after/before the current page 
+    @Field(() => Boolean)
+    hasNextPage: boolean;
     
     @Field(() => Boolean)
-    hasNextPage: boolean; // Indicates if there are more elements after the current page 
-    
-    @Field(() => Boolean)
-    hasPreviousPage: boolean; // Indicates if there are more elements before the current page
+    hasPreviousPage: boolean;
 }

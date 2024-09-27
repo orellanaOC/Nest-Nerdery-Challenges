@@ -22,7 +22,7 @@ export class Product {
     @Field(() => Int)
     stock: number;
 
-    @Field(() => Category)
+    @Field(() => Category, { nullable: false })
     category: Category;
 
     @Field()

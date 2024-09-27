@@ -13,6 +13,7 @@ import { PaginationInput } from 'src/pagination/dto/pagination-input.dto';
 import { ProductConnection } from './dto/product-connection.entity';
 import { PageInfoModel } from 'src/pagination/entities/page-info.entity';
 import { PaginationService } from 'src/pagination/pagination/pagination.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductsService {
@@ -118,73 +119,20 @@ export class ProductsService {
 		});
 	}
 
-	async getAllProducts(filter?: PaginationInput): Promise<ProductConnection> {
-		const { first, after, last, before } = filter || {};
-
-		let cursor = after ? { id: Number(after) } : undefined;
-
-		if (before) {
-			cursor = { id: Number(before) };
-		}
-
-		let take = first || last || 10;
-		if (last) {
-			take = -take;
-		}
-
-		const skip = cursor ? 1 : 0;
-
-		const products = await this.prisma.product.findMany({
-			where: {},
-			orderBy: {
-				id: 'asc',
-			},
-			take,
-			skip,
-			cursor,
-			include: {
-				picture: true,
-				category: true,
-			},
-		});
-
-		const startCursor =
-			products.length > 0 ? products[0].id.toString() : null;
-		const endCursor =
-			products.length > 0
-				? products[products.length - 1].id.toString()
-				: null;
-
-		const hasNextPage = !!(await this.prisma.product.findFirst({
-			where: {},
-			cursor: { id: Number(endCursor) },
-			skip: 1,
-			orderBy: { id: 'asc' },
-		}));
-
-		const hasPreviousPage = !!(await this.prisma.product.findFirst({
-			where: {},
-			cursor: { id: Number(startCursor) },
-			skip: 1,
-			orderBy: { id: 'desc' },
-		}));
-
-		const pageInfo: PageInfoModel = {
-			startCursor,
-			endCursor,
-			hasNextPage,
-			hasPreviousPage,
-		};
-
-		const edges = products.map((product) => ({
-			cursor: product.id.toString(),
-			node: product,
-		}));
-
-		return {
-			edges,
-			pageInfo,
-		};
+	async getAllProducts(
+		pagination?: PaginationInput,
+	): Promise<ProductConnection> {
+		return this.paginationService.paginate<
+			Product,
+			Prisma.ProductFindManyArgs
+		>(
+			this.prisma.product.findMany.bind(this.prisma.product),
+			pagination,
+			'id', // Cursor field
+			undefined, // Where clause (optional)
+			{ createdAt: 'asc' } as Prisma.ProductOrderByWithRelationInput, // OrderBy clause (optional)
+			{ picture: true, category: true }, // Include clause to fetch related picture and category
+		);
 	}
 
 	async getProductById(id: number) {

@@ -159,7 +159,7 @@ export class OrdersService {
 			where: whereClause,
 			cursor: { id: Number(startCursor) },
 			skip: 1,
-			orderBy: { id: 'desc' }, // To search backwards
+			orderBy: { id: 'asc' }, // To search backwards
 		}));
 
 		const pageInfo: PageInfoModel = {
