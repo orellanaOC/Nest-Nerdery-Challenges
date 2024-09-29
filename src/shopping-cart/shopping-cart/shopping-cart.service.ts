@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma/prisma.service';
 import { ShoppingCartLinesService } from '../shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.service';
 import { ShoppingCart } from '../entities/shopping-cart.entity';
 import { ShoppingCartLineInput } from '../shopping-cart-lines/dto/shopping-cart-line-input.dto';
@@ -7,12 +7,12 @@ import { ShoppingCartLineInput } from '../shopping-cart-lines/dto/shopping-cart-
 @Injectable()
 export class ShoppingCartsService {
 	constructor(
-		private readonly prisma: PrismaService,
+		private readonly prismaService: PrismaService,
 		private readonly shoppingCartLinesService: ShoppingCartLinesService,
 	) {}
 
 	async getShoppingCartByUserId(userId: number): Promise<ShoppingCart> {
-		const cart = await this.prisma.shoppingCart.findUnique({
+		const cart = await this.prismaService.shoppingCart.findUnique({
 			where: { userId },
 			include: {
 				lines: true,
@@ -30,7 +30,7 @@ export class ShoppingCartsService {
 		);
 
 		return {
-			id: cart.userId,
+			userId: cart.userId,
 			totalAmount: cart.total,
 			lines: lines,
 		};
@@ -41,7 +41,7 @@ export class ShoppingCartsService {
 		shoppingCartLineInput: ShoppingCartLineInput,
 	): Promise<ShoppingCart> {
 		// Get the shopping cart of the user
-		const cart = await this.prisma.shoppingCart.findUnique({
+		const cart = await this.prismaService.shoppingCart.findUnique({
 			where: { userId },
 		});
 
@@ -64,21 +64,21 @@ export class ShoppingCartsService {
 		}, 0);
 
 		// Update the shopping cart total amount
-		await this.prisma.shoppingCart.update({
+		await this.prismaService.shoppingCart.update({
 			where: { userId: cart.userId },
 			data: { total: totalAmount },
 		});
 
 		// Return the updated shopping cart with the new lines
 		return {
-			id: cart.userId,
+			userId: cart.userId,
 			totalAmount,
 			lines: updatedLines,
 		};
 	}
 
 	async clearShoppingCart(userId: number) {
-		await this.prisma.shoppingCartLine.deleteMany({
+		await this.prismaService.shoppingCartLine.deleteMany({
 			where: { shoppingCartId: userId },
 		});
 	}

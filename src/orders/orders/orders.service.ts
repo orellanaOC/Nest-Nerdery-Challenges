@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma/prisma.service';
 import { OrderLinesService } from '../order-lines/order-lines/order-lines.service';
 import { ShoppingCartsService } from 'src/shopping-cart/shopping-cart/shopping-cart.service';
 import { Order } from '../entities/order.entity';

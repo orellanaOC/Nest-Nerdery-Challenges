@@ -7,7 +7,7 @@ import { ShoppingCartLine } from '../shopping-cart-lines/entities/shopping-cart-
 @ObjectType()
 export class ShoppingCart {
     @Field(() => Int)
-    id: number;
+    userId: number;
 
     @Field(() => Int)
     totalAmount: number;
