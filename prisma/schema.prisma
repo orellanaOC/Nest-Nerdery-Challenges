@@ -22,7 +22,7 @@ datasource db {
   email       String     @unique
   password    String
   name        String
-  roleId      Int                             @map("role_id")
+  roleId      Int         @default(1)         @map("role_id")
   createdAt   DateTime    @default(now())     @map("created_at")
   updatedAt   DateTime    @updatedAt          @map("updated_at")
 
@@ -117,7 +117,6 @@ model Picture {
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-
 enum OrderStatus {
   PENDING
   SUCCEDED
@@ -162,7 +161,7 @@ model Role {
   name  String      @unique
 
   // Relations
-  User User[]
+  users User[]
 }
 
 model UserToken {
