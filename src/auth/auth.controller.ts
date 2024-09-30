@@ -1,4 +1,10 @@
-import { Controller, Post, Body, HttpCode } from '@nestjs/common';
+import {
+	Controller,
+	Post,
+	Body,
+	HttpCode,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSignUpDto } from '../users/dto/user-sign-up.dto';
 import { UserSignInDto } from '../users/dto/user-sign-in.dto';
@@ -9,8 +15,10 @@ import {
 	ApiBadRequestResponse,
 	ApiConflictResponse,
 	ApiCreatedResponse,
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiTags,
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SignUpResponseDto } from './dto/sign-up-response.dto';
 import { MessageResponseDto } from './dto/message-response.dto';
@@ -45,7 +53,18 @@ export class AuthController {
 	}
 
 	@Post('sign-in')
-	@HttpCode(200)
+	@ApiForbiddenResponse({
+		description: 'Please verify your email before signing in.',
+		type: MessageResponseDto,
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Invalid credentials.',
+		type: MessageResponseDto,
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Could not generate authentication token.',
+		type: MessageResponseDto,
+	})
 	async signIn(@Body() userSignInDto: UserSignInDto) {
 		return this.authService.signIn(userSignInDto);
 	}
