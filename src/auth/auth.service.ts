@@ -1,6 +1,7 @@
 import {
 	BadRequestException,
 	ConflictException,
+	ForbiddenException,
 	forwardRef,
 	Inject,
 	Injectable,
@@ -15,6 +16,7 @@ import { UserSignInDto } from '../users/dto/user-sign-in.dto';
 import { SignUpResponseDto } from './dto/sign-up-response.dto';
 import { MessageResponseDto } from './dto/message-response.dto';
 import { UsersService } from 'src/users/users/users.service';
+
 @Injectable()
 export class AuthService {
 	constructor(
@@ -104,19 +106,34 @@ export class AuthService {
 
 	async signIn(userSignInDto: UserSignInDto) {
 		const { email, password } = userSignInDto;
-		const user = await this.prisma.user.findUnique({
-			where: { email },
-		});
+		let user = null;
+		try {
+			user = await this.usersService.user({ email });
+		} catch {
+			throw new ForbiddenException(
+				'Please verify your email before signing in.',
+			);
+		}
 
 		if (!user || !(await bcrypt.compare(password, user.password))) {
 			throw new UnauthorizedException('Invalid credentials.');
 		}
 
-		const payload = { sub: user.id, email: user.email };
-		const token = this.jwtService.sign(payload);
+		try {
+			const payload = {
+				sub: user.id,
+				role: user.roleId,
+				email: user.email,
+			};
+			const token = this.jwtService.sign(payload);
 
-		return {
-			accessToken: token,
-		};
+			return {
+				accessToken: token,
+			};
+		} catch {
+			throw new InternalServerErrorException(
+				'Could not generate authentication token.',
+			);
+		}
 	}
 }
