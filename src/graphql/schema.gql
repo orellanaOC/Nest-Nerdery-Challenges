@@ -109,9 +109,9 @@ type OrderConnection {
 }
 
 type Query {
-  myShoppingCart: ShoppingCart!
   products(pagination: PaginationInput): ProductConnection!
   product(id: Int!): Product
+  myShoppingCart: ShoppingCart!
   order(id: Int!): Order!
   myOrders(filter: OrderFilter): OrderConnection!
   orders(filter: OrderFilter): OrderConnection!
@@ -131,31 +131,13 @@ input OrderFilter {
 }
 
 type Mutation {
-  updateShoppingCart(shoppingCartLineInput: ShoppingCartLineInput!): ShoppingCart!
   createProduct(data: CreateProductDto!): Product!
   updateProduct(id: Int!, data: UpdateProductDto!): Product!
   toggleProductEnableStatus(id: Int!, enable: Boolean!): Product!
   likeProduct(productId: Float!): Message!
   createPicture(data: CreatePictureDto!): Picture!
+  updateShoppingCart(shoppingCartLineInput: ShoppingCartLineInput!): ShoppingCart!
   checkouts: Order!
-}
-
-input ShoppingCartLineInput {
-  product: ProductInput!
-  productQuantity: Int!
-}
-
-input ProductInput {
-  id: Int!
-  name: String!
-  price: Int!
-  stock: Int!
-  category: CategoryInput!
-}
-
-input CategoryInput {
-  id: Int!
-  name: String!
 }
 
 input CreateProductDto {
@@ -164,6 +146,11 @@ input CreateProductDto {
   price: Int!
   stock: Int!
   category: CategoryInput!
+}
+
+input CategoryInput {
+  id: Int!
+  name: String!
 }
 
 input UpdateProductDto {
@@ -178,4 +165,17 @@ input UpdateProductDto {
 input CreatePictureDto {
   productId: Int!
   imageUrl: String!
+}
+
+input ShoppingCartLineInput {
+  product: ProductInput!
+  productQuantity: Int!
+}
+
+input ProductInput {
+  id: Int!
+  name: String!
+  price: Int!
+  stock: Int!
+  category: CategoryInput!
 }
