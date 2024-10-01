@@ -6,6 +6,7 @@ import {
 	Inject,
 	Injectable,
 	InternalServerErrorException,
+	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -16,6 +17,10 @@ import { UserSignInDto } from '../users/dto/user-sign-in.dto';
 import { SignUpResponseDto } from './dto/sign-up-response.dto';
 import { MessageResponseDto } from './dto/message-response.dto';
 import { UsersService } from 'src/users/users/users.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { SignInResponseDto } from './dto/sign-in-response.dto';
+import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -104,7 +109,9 @@ export class AuthService {
 		}
 	}
 
-	async signIn(userSignInDto: UserSignInDto) {
+	async signIn(
+		userSignInDto: UserSignInDto,
+	): Promise<SignInResponseDto | MessageResponseDto> {
 		const { email, password } = userSignInDto;
 		let user = null;
 		try {
@@ -121,11 +128,13 @@ export class AuthService {
 
 		try {
 			const payload = {
-				sub: user.id,
+				user_id: user.id,
 				role: user.roleId,
 				email: user.email,
 			};
-			const token = this.jwtService.sign(payload);
+			const token = this.jwtService.sign(payload, {
+				expiresIn: '1h',
+			});
 
 			return {
 				accessToken: token,
@@ -133,6 +142,52 @@ export class AuthService {
 		} catch {
 			throw new InternalServerErrorException(
 				'Could not generate authentication token.',
+			);
+		}
+	}
+
+	async forgotPassword(
+		forgotPasswordDto: ForgotPasswordDto,
+	): Promise<ForgotPasswordResponseDto | MessageResponseDto> {
+		const { email } = forgotPasswordDto;
+		let user = null;
+
+		try {
+			user = await this.usersService.user({ email });
+		} catch {
+			throw new ForbiddenException('Please verify your email.');
+		}
+
+		if (!user) {
+			throw new NotFoundException('User not found');
+		}
+
+		try {
+			const uuid = uuidv4();
+			const expiresAt = new Date();
+			expiresAt.setHours(expiresAt.getHours() + 1);
+			const payload = {
+				user_id: user.id,
+				role: user.roleId,
+				email: user.email,
+				uuid: uuid,
+			};
+			const resetToken = this.jwtService.sign(payload, {
+				expiresIn: '1h',
+			});
+
+			await this.prisma.forgotPassword.create({
+				data: {
+					userId: user.id,
+					resetToken,
+					expiresAt,
+				},
+			});
+
+			return { resetToken, expiresAt };
+		} catch {
+			throw new InternalServerErrorException(
+				'Could not generate the reset token.',
 			);
 		}
 	}

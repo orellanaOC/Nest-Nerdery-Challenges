@@ -70,8 +70,16 @@ export class AuthController {
 	}
 
 	@Post('forgot-password')
+	@ApiForbiddenResponse({
+		description: 'Please verify your email.',
+		type: MessageResponseDto,
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Could not generate the reset token.',
+		type: MessageResponseDto,
+	})
 	async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-		// TODO
+		return this.authService.forgotPassword(forgotPasswordDto);
 	}
 
 	@Post('new-password')
