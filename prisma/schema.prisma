@@ -169,7 +169,7 @@ model UserToken {
 
   id         Int       @id @default(autoincrement())
   userId     Int                              @map("user_id")
-  token      String    @db.VarChar(255)
+  token      String 
   expiresAt  DateTime                         @map("expires_at")
   createdAt  DateTime  @default(now())        @map("created_at")
 
@@ -182,7 +182,7 @@ model ForgotPassword {
 
   id         Int       @id @default(autoincrement()) 
   userId     Int                          @map("user_id")      
-  resetToken String    @db.VarChar(255)   @map("reset_token")
+  resetToken String                       @map("reset_token")
   expiresAt  DateTime                     @map("expires_at")
   createdAt  DateTime  @default(now())    @map("created_at")
 

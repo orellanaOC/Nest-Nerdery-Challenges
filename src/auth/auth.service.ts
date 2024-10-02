@@ -21,6 +21,8 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { SignInResponseDto } from './dto/sign-in-response.dto';
 import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { NewPasswordDto } from './dto/new-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -123,25 +125,40 @@ export class AuthService {
 		}
 
 		if (!user || !(await bcrypt.compare(password, user.password))) {
-			throw new UnauthorizedException('Invalid credentials.');
+			throw new UnauthorizedException(
+				'Invalid user data for token generation.',
+			);
 		}
 
 		try {
+			const expiresAt = new Date();
+			expiresAt.setHours(expiresAt.getHours() + 1);
+
 			const payload = {
 				user_id: user.id,
-				role: user.roleId,
+				role_id: user.roleId,
 				email: user.email,
 			};
+
 			const token = this.jwtService.sign(payload, {
 				expiresIn: '1h',
 			});
 
+			const userToken = await this.prisma.userToken.create({
+				data: {
+					userId: user.id,
+					token,
+					expiresAt,
+				},
+			});
+
 			return {
-				accessToken: token,
+				accessToken: userToken.token,
 			};
-		} catch {
+		} catch (error) {
+			console.error('Error generating reset token:', error);
 			throw new InternalServerErrorException(
-				'Could not generate authentication token.',
+				'Could not generate the reset token.',
 			);
 		}
 	}
@@ -166,12 +183,20 @@ export class AuthService {
 			const uuid = uuidv4();
 			const expiresAt = new Date();
 			expiresAt.setHours(expiresAt.getHours() + 1);
+
+			if (!user.id || !user.roleId || !user.email) {
+				throw new InternalServerErrorException(
+					'Invalid user data for token generation.',
+				);
+			}
+
 			const payload = {
 				user_id: user.id,
-				role: user.roleId,
+				role_id: user.roleId,
 				email: user.email,
 				uuid: uuid,
 			};
+
 			const resetToken = this.jwtService.sign(payload, {
 				expiresIn: '1h',
 			});
@@ -185,9 +210,144 @@ export class AuthService {
 			});
 
 			return { resetToken, expiresAt };
-		} catch {
+		} catch (error) {
+			console.error('Error during token generation:', error);
 			throw new InternalServerErrorException(
 				'Could not generate the reset token.',
+			);
+		}
+	}
+
+	async newPassword(
+		resetToken: string,
+		newPasswordDto: NewPasswordDto,
+	): Promise<MessageResponseDto> {
+		const { newPassword } = newPasswordDto;
+
+		try {
+			const decodedToken = this.jwtService.verify(resetToken);
+			const userId = decodedToken.user_id;
+
+			const tokenRecord = await this.prisma.forgotPassword.findFirst({
+				where: {
+					resetToken,
+					userId,
+					expiresAt: {
+						gt: new Date(),
+					},
+				},
+			});
+
+			if (tokenRecord && tokenRecord.expiresAt < new Date()) {
+				await this.prisma.forgotPassword.delete({
+					where: { id: tokenRecord.id },
+				});
+
+				throw new BadRequestException('Expired reset token.');
+			}
+
+			if (!tokenRecord) {
+				throw new BadRequestException('Invalid reset token.');
+			}
+
+			const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+			await this.prisma.user.update({
+				where: { id: userId },
+				data: {
+					password: hashedPassword,
+				},
+			});
+
+			await this.prisma.forgotPassword.delete({
+				where: { id: tokenRecord.id },
+			});
+
+			return { message: 'Password successfully reset.' };
+		} catch {
+			throw new InternalServerErrorException(
+				'Error processing the password reset request.',
+			);
+		}
+	}
+
+	async resetPassword(
+		token: string,
+		resetPasswordDto: ResetPasswordDto,
+	): Promise<MessageResponseDto> {
+		const { currentPassword, newPassword } = resetPasswordDto;
+
+		try {
+			const decodedToken = this.jwtService.verify(token);
+			const userId = decodedToken.user_id;
+			const user = await this.usersService.user({ id: userId });
+
+			const tokenRecord = await this.prisma.userToken.findFirst({
+				where: {
+					token,
+					userId,
+					expiresAt: {
+						gt: new Date(),
+					},
+				},
+			});
+
+			if (!tokenRecord) {
+				throw new BadRequestException(
+					'Invalid or expired reset token.',
+				);
+			}
+
+			const isCurrentPasswordValid = await bcrypt.compare(
+				currentPassword,
+				user.password,
+			);
+
+			if (!isCurrentPasswordValid) {
+				throw new BadRequestException(
+					'Invalid request. Ensure that both the current and new passwords are provided.',
+				);
+			}
+
+			const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+			await this.prisma.user.update({
+				where: { id: userId },
+				data: {
+					password: hashedPassword,
+				},
+			});
+
+			return { message: 'Password successfully reset.' };
+		} catch (error) {
+			console.error('Error generating reset token:', error);
+			throw new InternalServerErrorException(
+				'Error processing the password reset request.',
+			);
+		}
+	}
+
+	async signOut(token: string): Promise<MessageResponseDto> {
+		try {
+			const tokenRecord = await this.prisma.userToken.findFirst({
+				where: { token },
+			});
+
+			if (!tokenRecord) {
+				throw new UnauthorizedException('Invalid token.');
+			}
+
+			await this.prisma.userToken.delete({
+				where: { id: tokenRecord.id },
+			});
+
+			return {
+				message: 'Successfully signed out. Token has been invalidated.',
+			};
+		} catch (error) {
+			console.error('Error during sign out:', error);
+			throw new InternalServerErrorException(
+				'Could not sign out. Please try again later.',
 			);
 		}
 	}
