@@ -5,5 +5,6 @@ import { JwtService } from '@nestjs/jwt';
 
 @Module({
 	providers: [PicturesResolver, PicturesService, JwtService],
+	exports: [PicturesService],
 })
 export class PicturesModule {}

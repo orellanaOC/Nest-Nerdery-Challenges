@@ -12,5 +12,5 @@ export class CreatePictureDto {
     @Field(() => String, { nullable: false })
 	@IsNotEmpty()
 	@IsString()
-    imageUrl: string;
+    imageBase64: string;
 }

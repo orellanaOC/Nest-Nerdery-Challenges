@@ -154,7 +154,7 @@ type Mutation {
   likeProduct(productId: Float!): Message!
 
   """Add images. Requires authentication with Manager role."""
-  createPicture(data: CreatePictureDto!): Picture!
+  uploadPicture(data: CreatePictureDto!): Picture!
   updateShoppingCart(shoppingCartLineInput: ShoppingCartLineInput!): ShoppingCart!
   checkouts: Order!
 }
@@ -183,7 +183,7 @@ input UpdateProductDto {
 
 input CreatePictureDto {
   productId: Int!
-  imageUrl: String!
+  imageBase64: String!
 }
 
 input ShoppingCartLineInput {
