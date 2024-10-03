@@ -112,8 +112,16 @@ type Query {
   products(pagination: PaginationInput): ProductConnection!
   product(id: Int!): Product
   myShoppingCart: ShoppingCart!
+
+  """
+  Order by Id. Requires authentication with Manager role or the logged user id.
+  """
   order(id: Int!): Order!
+
+  """My Orders. Requires authentication."""
   myOrders(filter: OrderFilter): OrderConnection!
+
+  """Orders. Requires authentication with Manager role."""
   orders(filter: OrderFilter): OrderConnection!
 }
 
@@ -131,10 +139,21 @@ input OrderFilter {
 }
 
 type Mutation {
+  """Create a new product. Requires authentication with Manager role."""
   createProduct(data: CreateProductDto!): Product!
+
+  """Update a product. Requires authentication with Manager role."""
   updateProduct(id: Int!, data: UpdateProductDto!): Product!
+
+  """
+  Toggle Product Enable Status. Requires authentication with Manager role.
+  """
   toggleProductEnableStatus(id: Int!, enable: Boolean!): Product!
+
+  """Like product. Requires authentication."""
   likeProduct(productId: Float!): Message!
+
+  """Add images. Requires authentication with Manager role."""
   createPicture(data: CreatePictureDto!): Picture!
   updateShoppingCart(shoppingCartLineInput: ShoppingCartLineInput!): ShoppingCart!
   checkouts: Order!

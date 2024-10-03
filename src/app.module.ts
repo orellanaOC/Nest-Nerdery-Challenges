@@ -11,10 +11,8 @@ import { OrdersModule } from './orders/orders.module';
 import { PaginationModule } from './pagination/pagination.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 
-const configService = new ConfigService();
-console.log('JWT_SECRET:', configService.get<string>('JWT_SECRET'));
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -31,6 +29,7 @@ console.log('JWT_SECRET:', configService.get<string>('JWT_SECRET'));
 			driver: ApolloDriver,
 			autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
 			playground: true,
+			context: ({ req }) => ({ req }),
 		}),
 	],
 	controllers: [AppController],

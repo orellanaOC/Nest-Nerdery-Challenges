@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 // initialize Prisma Client
 const prisma = new PrismaClient();
@@ -354,14 +355,14 @@ async function main() {
 	async function generateMockData() {
 		const productCount = await prisma.product.count();
 
-		// Create 10 users with roleId = 1 (Client)
+		// Create 10 users with roleId = 2(Client)
 		for (let i = 1; i <= 10; i++) {
 			const user = await prisma.user.create({
 				data: {
 					email: `client${i}@example.com`,
-					password: `password${i}`,
+					password: await bcrypt.hash(`password${i}`, 10),
 					name: `Client ${i}`,
-					roleId: 1, // Client role
+					roleId: 2, // Manager Role
 				},
 			});
 
@@ -374,7 +375,6 @@ async function main() {
 				},
 			});
 
-			// Add 10 lines to the shopping cart (with random products)
 			for (let j = 1; j <= 10; j++) {
 				const productId = Math.floor(Math.random() * productCount) + 1;
 
