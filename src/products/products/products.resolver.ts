@@ -6,7 +6,10 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Message } from '../messages/entities/message.entity';
 import { ProductConnection } from './dto/product-connection.entity';
 import { PaginationInput } from 'src/pagination/dto/pagination-input.dto';
-
+import { BadRequestException, UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import { RolesGuard } from 'src/auth/guards/role.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 @Resolver(() => Product)
 export class ProductsResolver {
 	constructor(private productService: ProductsService) {}
@@ -24,14 +27,24 @@ export class ProductsResolver {
 		return this.productService.getProductById(id);
 	}
 
-	@Mutation(() => Product)
+	@Mutation(() => Product, {
+		description:
+			'Create a new product. Requires authentication with Manager role.',
+	})
+	@Roles(2)
+	@UseGuards(GqlAuthGuard, RolesGuard)
 	async createProduct(
 		@Args('data') data: CreateProductDto,
 	): Promise<Product> {
 		return this.productService.create(data);
 	}
 
-	@Mutation(() => Product)
+	@Mutation(() => Product, {
+		description:
+			'Update a product. Requires authentication with Manager role.',
+	})
+	@Roles(2)
+	@UseGuards(GqlAuthGuard, RolesGuard)
 	async updateProduct(
 		@Args('id', { type: () => Int }) id: number,
 		@Args('data') data: UpdateProductDto,
@@ -39,7 +52,12 @@ export class ProductsResolver {
 		return this.productService.update(id, data);
 	}
 
-	@Mutation(() => Product)
+	@Mutation(() => Product, {
+		description:
+			'Toggle Product Enable Status. Requires authentication with Manager role.',
+	})
+	@Roles(2)
+	@UseGuards(GqlAuthGuard, RolesGuard)
 	async toggleProductEnableStatus(
 		@Args('id', { type: () => Int }) id: number,
 		@Args('enable', { type: () => Boolean }) enable: boolean,
@@ -47,17 +65,23 @@ export class ProductsResolver {
 		return this.productService.toggleProductEnableStatus(id, enable);
 	}
 
-	// TODO: add the userID by header/token
-	@Mutation(() => Message)
+	@Mutation(() => Message, {
+		description: 'Like product. Requires authentication.',
+	})
+	@UseGuards(GqlAuthGuard)
 	async likeProduct(
-		@Args('productId') productId: number, // Product ID passed in the mutation
-		// @Context() context: any, // Use the context to extract token from headers
+		@Args('productId') productId: number,
+		@Context() context: any,
 	): Promise<Message> {
-		// Extract the user/client ID from the token
-		// const req: Request = context.req;
-		// const userId = this.extractUserIdFromToken(req.headers.authorization);
+		try {
+			const { user } = context.req;
 
-		// Call the service to like the product
-		return this.productService.toggleLikeProduct(/*userId,*/ 4, productId);
+			return this.productService.toggleLikeProduct(
+				user.userId,
+				productId,
+			);
+		} catch {
+			throw new BadRequestException('Invalid token');
+		}
 	}
 }

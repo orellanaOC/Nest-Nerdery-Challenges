@@ -1,8 +1,4 @@
-import {
-	ForbiddenException,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -11,7 +7,6 @@ import { CategoriesService } from '../categories/categories.service';
 import { Message } from '../messages/entities/message.entity';
 import { PaginationInput } from 'src/pagination/dto/pagination-input.dto';
 import { ProductConnection } from './dto/product-connection.entity';
-import { PageInfoModel } from 'src/pagination/entities/page-info.entity';
 import { PaginationService } from 'src/pagination/pagination/pagination.service';
 import { Prisma } from '@prisma/client';
 
@@ -177,7 +172,6 @@ export class ProductsService {
 		userId: number,
 		productId: number,
 	): Promise<Message> {
-		// Check if the user has already liked this product
 		const existingLike = await this.prisma.likeProduct.findUnique({
 			where: {
 				userId_productId: {
@@ -188,7 +182,6 @@ export class ProductsService {
 		});
 
 		if (existingLike) {
-			// If the product is already liked, remove the like
 			await this.prisma.likeProduct.delete({
 				where: {
 					userId_productId: {
