@@ -4,10 +4,11 @@ import { OrdersService } from './orders/orders.service';
 import { OrdersResolver } from './orders/orders.resolver';
 import { ShoppingCartsModule } from 'src/shopping-cart/shopping-carts.module';
 import { PaginationModule } from 'src/pagination/pagination.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
 	imports: [PaginationModule, OrderLinesModule, ShoppingCartsModule],
-	providers: [OrdersService, OrdersResolver],
+	providers: [OrdersService, OrdersResolver, JwtService],
 	exports: [OrdersService],
 })
 export class OrdersModule {}

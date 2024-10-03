@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { SignUpResponseDto } from './dto/sign-up-response.dto';
 import { MessageResponseDto } from './dto/message-response.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { SignInResponseDto } from './dto/sign-in-response.dto';
