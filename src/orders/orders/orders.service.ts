@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma/prisma.service';
 import { OrderLinesService } from '../order-lines/order-lines/order-lines.service';
 import { ShoppingCartsService } from 'src/shopping-cart/shopping-cart/shopping-cart.service';
@@ -67,7 +67,11 @@ export class OrdersService {
 		return orderWithLines;
 	}
 
-	async findOrderById(id: number): Promise<Order> {
+	async findOrderById(
+		id: number,
+		userId?: number,
+		roleId?: number,
+	): Promise<Order> {
 		const order = await this.prisma.order.findUnique({
 			where: { id },
 			include: {
@@ -76,8 +80,12 @@ export class OrdersService {
 		});
 
 		if (!order) {
-			throw new NotFoundException(
-				'Shopping cart not found for this user',
+			throw new NotFoundException('Order not found');
+		}
+
+		if (roleId !== 2 && order.userId !== userId) {
+			throw new UnauthorizedException(
+				'You do not have access to this order',
 			);
 		}
 
@@ -94,8 +102,17 @@ export class OrdersService {
 		};
 	}
 
-	async orders(filter?: OrderFilter): Promise<OrderConnection> {
-		const { status, pagination, userId } = filter || {};
+	async orders(
+		filter?: OrderFilter,
+		userIdLogged?: number,
+	): Promise<OrderConnection> {
+		// eslint-disable-next-line prefer-const
+		let { status, pagination, userId } = filter || {};
+
+		if (userIdLogged) {
+			userId = userIdLogged;
+		}
+
 		// prettier-ignore
 		const whereClause: Prisma.OrderWhereInput | undefined =
 			userId || status
