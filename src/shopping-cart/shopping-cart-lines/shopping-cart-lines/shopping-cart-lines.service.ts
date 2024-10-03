@@ -17,7 +17,6 @@ export class ShoppingCartLinesService {
 	): Promise<ShoppingCartLine[]> {
 		const lines = await this.getLinesByCartId(userId);
 
-		console.log({ shoppingCartLineInput, lines });
 		const existingLine = lines.find(
 			(line) => line.product.id === shoppingCartLineInput.product.id,
 		);
