@@ -2,9 +2,23 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as passport from 'passport';
+import * as bodyParser from 'body-parser';
+import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
+	const configService = app.get(ConfigService);
+	const port = configService.get<number>('PORT') || 3000;
+
+	app.use('/payments/webhooks', bodyParser.raw({ type: '*/*' }));
+	app.use(passport.initialize());
+	app.useGlobalPipes(new ValidationPipe());
+	app.enableCors({
+		origin: '*',
+		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+		credentials: true,
+	});
 
 	const config = new DocumentBuilder()
 		.setTitle('Eco-friendly store')
@@ -18,9 +32,9 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('api', app, document);
 
-	app.use(passport.initialize());
-
-	await app.listen(3000);
+	await app.listen(port, () => {
+		console.log(`🚀 Server running on http://localhost:${port}`);
+	});
 }
 
 bootstrap();
