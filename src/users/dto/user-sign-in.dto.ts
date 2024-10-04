@@ -9,7 +9,7 @@ export class UserSignInDto {
     @IsEmail()
     email: string;
 
-	@ApiProperty({ required: true, example: 'securePassword123' })
+	@ApiProperty({ required: true, example: 'securePassword123*' })
     @IsStrongPassword()
     password: string;
 }

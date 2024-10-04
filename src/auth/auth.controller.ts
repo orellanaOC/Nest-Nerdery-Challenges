@@ -5,6 +5,7 @@ import {
 	HttpCode,
 	UseGuards,
 	Request,
+	HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSignUpDto } from '../users/dto/user-sign-up.dto';
@@ -34,6 +35,7 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@Post('sign-up')
+	@HttpCode(HttpStatus.OK)
 	@ApiCreatedResponse({
 		description: 'User successfully registered and shopping cart created.',
 		type: SignUpResponseDto,
@@ -60,6 +62,7 @@ export class AuthController {
 	}
 
 	@Post('sign-in')
+	@HttpCode(HttpStatus.OK)
 	@ApiUnauthorizedResponse({
 		description:
 			'Invalid credentials. Either the email or password provided is incorrect.',
@@ -82,6 +85,7 @@ export class AuthController {
 	}
 
 	@Post('forgot-password')
+	@HttpCode(HttpStatus.OK)
 	@ApiInternalServerErrorResponse({
 		description:
 			'An unexpected error occurred while generating the reset token. Please try again later.',
@@ -94,6 +98,7 @@ export class AuthController {
 	}
 
 	@Post('new-password')
+	@HttpCode(HttpStatus.OK)
 	@ApiBadRequestResponse({
 		description:
 			'Invalid or expired reset token. Please request a new password reset token and try again.',
@@ -120,6 +125,7 @@ export class AuthController {
 	}
 
 	@Post('reset-password')
+	@HttpCode(HttpStatus.OK)
 	@ApiBadRequestResponse({
 		description:
 			'Invalid request. Ensure that both the current and new passwords are provided.',
@@ -146,7 +152,7 @@ export class AuthController {
 	}
 
 	@Post('sign-out')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	@ApiUnauthorizedResponse({
 		description:
 			'Authentication failed. Invalid or missing Bearer token. Please provide a valid token to sign out.',
