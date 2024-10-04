@@ -12,6 +12,7 @@ import { PaginationModule } from './pagination/pagination.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import { ConfigModule } from '@nestjs/config';
 		OrdersModule,
 		UsersModule,
 		PaginationModule,
+		PaymentsModule,
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
