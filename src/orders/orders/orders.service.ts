@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma/prisma.service';
 import { OrderLinesService } from '../order-lines/order-lines/order-lines.service';
 import { ShoppingCartsService } from 'src/shopping-cart/shopping-cart/shopping-cart.service';
 import { Order } from '../entities/order.entity';
-import { Prisma } from '@prisma/client';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { OrderFilter } from '../dto/order-filter-input.dto';
 import { OrderConnection } from '../dto/order-connection.entity';
 import { PaginationService } from 'src/pagination/pagination/pagination.service';
+import { PaymentsService } from 'src/payments/payments.service';
 
 @Injectable()
 export class OrdersService {
@@ -15,6 +20,7 @@ export class OrdersService {
 		private readonly orderLineService: OrderLinesService,
 		private readonly shoppingCartService: ShoppingCartsService,
 		private readonly paginationService: PaginationService,
+		private readonly paymentsService: PaymentsService,
 	) {}
 
 	async createOrderFromCart(userId: number): Promise<Order> {
@@ -29,10 +35,16 @@ export class OrdersService {
 			return total + line.product.price * line.productQuantity;
 		}, 0);
 
+		const paymentIntent = await this.paymentsService.createPaymentIntent(
+			totalAmount,
+			'usd',
+		);
+
 		const newOrder = await this.prisma.order.create({
 			data: {
 				userId,
 				total: totalAmount,
+				paymentIntentId: paymentIntent.id,
 			},
 		});
 
@@ -61,10 +73,70 @@ export class OrdersService {
 			},
 		});
 
-		// TODO: delete the shopping cart after the succeeded paid order
-		//await this.shoppingCartService.clearCart(userId);
-
 		return orderWithLines;
+	}
+
+	async orderStatusChange(
+		paymentIntentId: string,
+		successful: boolean,
+	): Promise<Order> {
+		const order = await this.findOneByPaymentIntentId(paymentIntentId);
+
+		if (!order) {
+			throw new NotFoundException(
+				`Order not found for PaymentIntent ID: ${paymentIntentId}`,
+			);
+		}
+
+		if (successful) {
+			await this.shoppingCartService.clearShoppingCart(order.userId);
+		}
+
+		return await this.prisma.order.update({
+			where: { id: order.id },
+			data: {
+				status: successful ? OrderStatus.SUCCEEDED : OrderStatus.FAILED,
+			},
+			include: {
+				lines: {
+					include: {
+						product: {
+							include: {
+								category: true,
+								picture: true,
+							},
+						},
+					},
+				},
+			},
+		});
+	}
+
+	async findOneByPaymentIntentId(
+		paymentIntentId: string,
+	): Promise<Order | undefined> {
+		const order = await this.prisma.order.findUnique({
+			where: { paymentIntentId },
+			include: {
+				lines: true,
+			},
+		});
+
+		if (!order) {
+			throw new NotFoundException('Order not found');
+		}
+
+		const lines = await this.orderLineService.getLinesByOrderId(order.id);
+
+		return {
+			id: order.id,
+			userId: order.userId,
+			status: order.status,
+			total: order.total,
+			createdAt: order.createdAt,
+			updatedAt: order.updatedAt,
+			lines: lines,
+		};
 	}
 
 	async findOrderById(

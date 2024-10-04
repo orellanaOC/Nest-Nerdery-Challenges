@@ -5,9 +5,15 @@ import { OrdersResolver } from './orders/orders.resolver';
 import { ShoppingCartsModule } from 'src/shopping-cart/shopping-carts.module';
 import { PaginationModule } from 'src/pagination/pagination.module';
 import { JwtService } from '@nestjs/jwt';
+import { PaymentsModule } from 'src/payments/payments.module';
 
 @Module({
-	imports: [PaginationModule, OrderLinesModule, ShoppingCartsModule],
+	imports: [
+		PaginationModule,
+		OrderLinesModule,
+		ShoppingCartsModule,
+		PaymentsModule,
+	],
 	providers: [OrdersService, OrdersResolver, JwtService],
 	exports: [OrdersService],
 })
