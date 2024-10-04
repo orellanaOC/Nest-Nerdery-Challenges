@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -9,6 +10,7 @@ import { PaginationInput } from 'src/pagination/dto/pagination-input.dto';
 import { ProductConnection } from './dto/product-connection.entity';
 import { PaginationService } from 'src/pagination/pagination/pagination.service';
 import { Prisma } from '@prisma/client';
+import { CategoryFilter } from '../categories/dto/category-filter.dto';
 
 @Injectable()
 export class ProductsService {
@@ -116,7 +118,16 @@ export class ProductsService {
 
 	async getAllProducts(
 		pagination?: PaginationInput,
+		category?: CategoryFilter,
 	): Promise<ProductConnection> {
+		let whereClause = undefined;
+
+		if (category) {
+			whereClause = {
+				categoryId: category.id,
+			};
+		}
+
 		return this.paginationService.paginate<
 			Product,
 			Prisma.ProductFindManyArgs
@@ -124,7 +135,7 @@ export class ProductsService {
 			this.prisma.product.findMany.bind(this.prisma.product),
 			pagination,
 			'id', // Cursor field
-			undefined, // Where clause (optional)
+			whereClause, // Where clause (optional)
 			{ createdAt: 'asc' } as Prisma.ProductOrderByWithRelationInput, // OrderBy clause (optional)
 			{ picture: true, category: true }, // Include clause to fetch related picture and category
 		);
