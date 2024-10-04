@@ -10,6 +10,7 @@ import { BadRequestException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { CategoryFilter } from '../categories/dto/category-filter.dto';
 @Resolver(() => Product)
 export class ProductsResolver {
 	constructor(private productService: ProductsService) {}
@@ -18,8 +19,9 @@ export class ProductsResolver {
 	async products(
 		// prettier-ignore
 		@Args('pagination', { type: () => PaginationInput, nullable: true }) pagination: PaginationInput,
+		@Args('category', { type: () => CategoryFilter, nullable: true }) category?: CategoryFilter,
 	): Promise<ProductConnection> {
-		return this.productService.getAllProducts(pagination);
+		return this.productService.getAllProducts(pagination, category);
 	}
 
 	@Query(() => Product, { nullable: true })

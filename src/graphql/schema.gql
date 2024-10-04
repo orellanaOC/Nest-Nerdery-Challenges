@@ -109,7 +109,7 @@ type OrderConnection {
 }
 
 type Query {
-  products(pagination: PaginationInput): ProductConnection!
+  products(pagination: PaginationInput, category: CategoryFilter): ProductConnection!
   product(id: Int!): Product
   myShoppingCart: ShoppingCart!
 
@@ -130,6 +130,11 @@ input PaginationInput {
   after: String
   last: Int
   before: String
+}
+
+input CategoryFilter {
+  id: Int
+  name: String
 }
 
 input OrderFilter {
