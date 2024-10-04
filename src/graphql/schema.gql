@@ -1,0 +1,200 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Category {
+  id: Int!
+  name: String!
+}
+
+type Picture {
+  id: Int!
+  productId: Int!
+  imageUrl: String!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Product {
+  id: Int!
+  name: String!
+  specification: String
+  price: Int!
+  stock: Int!
+  category: Category!
+  enable: Boolean!
+  picture: [Picture]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Message {
+  status: String!
+  message: String!
+}
+
+type ProductEdge {
+  cursor: String!
+  node: Product!
+}
+
+type PageInfoModel {
+  endCursor: String
+  startCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+type ProductConnection {
+  edges: [ProductEdge]!
+  pageInfo: PageInfoModel!
+}
+
+type ShoppingCartLine {
+  id: Int!
+  shoppingCartId: Int!
+  product: Product!
+  productQuantity: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ShoppingCart {
+  userId: Int!
+  totalAmount: Int!
+  lines: [ShoppingCartLine]!
+}
+
+type OrderLine {
+  id: Int!
+  orderId: Int!
+  product: Product!
+  productQuantity: Int!
+  pricePerItem: Int!
+  subTotal: Int!
+  createdAt: DateTime!
+}
+
+type Order {
+  id: Int!
+  userId: Int!
+  status: OrderStatus!
+  total: Int!
+  lines: [OrderLine]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+Represents the current state of an order, indicating whether it is pending, successfully completed, or failed due to an issue.
+"""
+enum OrderStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+type OrderEdge {
+  cursor: String!
+  node: Order!
+}
+
+type OrderConnection {
+  edges: [OrderEdge]!
+  pageInfo: PageInfoModel!
+}
+
+type Query {
+  products(pagination: PaginationInput): ProductConnection!
+  product(id: Int!): Product
+  myShoppingCart: ShoppingCart!
+
+  """
+  Order by Id. Requires authentication with Manager role or the logged user id.
+  """
+  order(id: Int!): Order!
+
+  """My Orders. Requires authentication."""
+  myOrders(filter: OrderFilter): OrderConnection!
+
+  """Orders. Requires authentication with Manager role."""
+  orders(filter: OrderFilter): OrderConnection!
+}
+
+input PaginationInput {
+  first: Int
+  after: String
+  last: Int
+  before: String
+}
+
+input OrderFilter {
+  status: OrderStatus
+  pagination: PaginationInput
+  userId: Int
+}
+
+type Mutation {
+  """Create a new product. Requires authentication with Manager role."""
+  createProduct(data: CreateProductDto!): Product!
+
+  """Update a product. Requires authentication with Manager role."""
+  updateProduct(id: Int!, data: UpdateProductDto!): Product!
+
+  """
+  Toggle Product Enable Status. Requires authentication with Manager role.
+  """
+  toggleProductEnableStatus(id: Int!, enable: Boolean!): Product!
+
+  """Like product. Requires authentication."""
+  likeProduct(productId: Float!): Message!
+
+  """Add images. Requires authentication with Manager role."""
+  uploadPicture(data: CreatePictureDto!): Picture!
+  updateShoppingCart(shoppingCartLineInput: ShoppingCartLineInput!): ShoppingCart!
+  checkouts: Order!
+}
+
+input CreateProductDto {
+  name: String!
+  specification: String
+  price: Int!
+  stock: Int!
+  category: CategoryInput!
+}
+
+input CategoryInput {
+  id: Int!
+  name: String!
+}
+
+input UpdateProductDto {
+  name: String
+  specification: String
+  price: Int
+  stock: Int
+  category: CategoryInput
+  enable: Boolean
+}
+
+input CreatePictureDto {
+  productId: Int!
+  imageBase64: String!
+}
+
+input ShoppingCartLineInput {
+  product: ProductInput!
+  productQuantity: Int!
+}
+
+input ProductInput {
+  id: Int!
+  name: String!
+  price: Int!
+  stock: Int!
+  category: CategoryInput!
+}

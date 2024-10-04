@@ -1,0 +1,192 @@
+// eslint-disable prettier/prettier
+// eslint-disable indent
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+  model User {
+  @@map("users")
+
+  id          Int        @id @default(autoincrement())
+  email       String     @unique
+  password    String
+  name        String
+  roleId      Int         @default(1)         @map("role_id")
+  createdAt   DateTime    @default(now())     @map("created_at")
+  updatedAt   DateTime    @updatedAt          @map("updated_at")
+
+  // Relations
+  role                  Role                  @relation(fields: [roleId], references: [id])
+  shoppingCart          ShoppingCart?
+  Order                 Order[]
+  UserToken             UserToken[]
+  ForgotPassword        ForgotPassword[]
+  LikeProduct           LikeProduct[]
+}
+
+model Category {
+  @@map("categories")
+  id    Int         @id @default(autoincrement())
+  name  String      @unique
+
+  // Relations
+  Product Product[]
+}
+
+model Product {
+  @@map("products")
+
+  id                Int         @id @default(autoincrement())
+  name              String
+  specification     String?
+  price             Int         @default(50)
+  stock             Int         @default(100)
+  categoryId        Int                         @map("category_id")
+  enable            Boolean     @default(true)
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt      @map("updated_at")
+
+  // Relations
+  category          Category    @relation(fields: [categoryId], references: [id])
+  shoppingCartLine  ShoppingCartLine[]
+  orderLine         OrderLine[]
+  likeProduct       LikeProduct[]
+  picture           Picture[]
+}
+
+model LikeProduct {
+  @@map("like_products")
+
+  userId    Int              @map("user_id")
+  productId Int              @map("product_id")
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([userId, productId])
+}
+
+model ShoppingCart {
+  @@map("shopping_carts")
+
+  userId    Int     @unique         @map("user_id")
+  total     Int     @default(0)
+  // Relations
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lines     ShoppingCartLine[]
+
+  @@id([userId])
+}
+
+model ShoppingCartLine {
+  @@map("shopping_cart_lines")
+
+  id                Int       @id @default(autoincrement())
+  productId         Int                           @map("product_id")
+  productQuantity   Int                           @map("product_quantity")
+  shoppingCartId    Int                           @map("shopping_cart_id")
+  createdAt         DateTime  @default(now())     @map("created_at")
+  updatedAt         DateTime  @updatedAt          @map("updated_at")
+
+  // Relations
+  product       Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shoppingCart  ShoppingCart @relation(fields: [shoppingCartId], references: [userId], onDelete: Cascade)
+}
+
+model Picture {
+  @@map("pictures")
+
+  id        Int     @id @default(autoincrement())
+  productId         Int                           @map("product_id")
+  imageUrl          String                        @map("image_url")
+  createdAt         DateTime  @default(now())     @map("created_at")
+
+   // Relations
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum OrderStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model Order {
+  @@map("orders")
+
+  id                Int             @id @default(autoincrement())
+  userId            Int                                 @map("user_id")
+  status            OrderStatus     @default(PENDING)
+  paymentIntentId   String          @unique             @map("payment_intent_id")          
+  total             Int                             
+  createdAt         DateTime        @default(now())     @map("created_at")
+  updatedAt         DateTime        @updatedAt          @map("updated_at")
+
+  // Relations
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lines       OrderLine[]
+}
+
+model OrderLine {
+  @@map("order_lines")
+
+  id                Int       @id @default(autoincrement())
+  orderId           Int                           @map("order_id")
+  productId         Int                           @map("product_id")
+  productQuantity   Int                           @map("product_quantity")
+  pricePerItem      Int                           @map("price_per_item")
+  subTotal          Int                           @map("sub_total")
+  createdAt         DateTime  @default(now())     @map("created_at")
+
+  // Relations
+  product       Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  Order         Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Role {
+  @@map("roles")
+
+  id    Int         @id @default(autoincrement())
+  name  String      @unique
+
+  // Relations
+  users User[]
+}
+
+model UserToken {
+  @@map("user_tokens")
+
+  id         Int       @id @default(autoincrement())
+  userId     Int                              @map("user_id")
+  token      String 
+  expiresAt  DateTime                         @map("expires_at")
+  createdAt  DateTime  @default(now())        @map("created_at")
+
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ForgotPassword {
+  @@map("forgot_passwords")
+
+  id         Int       @id @default(autoincrement()) 
+  userId     Int                          @map("user_id")      
+  resetToken String                       @map("reset_token")
+  expiresAt  DateTime                     @map("expires_at")
+  createdAt  DateTime  @default(now())    @map("created_at")
+
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
