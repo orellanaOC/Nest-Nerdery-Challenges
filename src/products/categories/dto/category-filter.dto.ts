@@ -5,9 +5,9 @@ import { InputType, Field, Int } from '@nestjs/graphql';
 
 @InputType()
 export class CategoryFilter {
-    @Field(() => Int, { nullable: true })
-    id?: string;
+	@Field(() => Int, { nullable: true })
+	id?: string;
 
-    @Field(() => String, { nullable: true })
-    name?: string;
+	@Field(() => String, { nullable: true })
+	name?: string;
 }

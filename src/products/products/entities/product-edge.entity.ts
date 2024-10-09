@@ -7,9 +7,9 @@ import { Product } from './product.entity';
 
 @ObjectType()
 export class ProductEdge implements Edge<Product> {
-    @Field(() => String) 
-    cursor: string;
-    
-    @Field(() => Product) 
-    node: Product;
+	@Field(() => String)
+	cursor: string;
+
+	@Field(() => Product)
+	node: Product;
 }

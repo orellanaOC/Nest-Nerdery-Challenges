@@ -6,21 +6,21 @@ import { Product } from 'src/products/products/entities/product.entity';
 
 @ObjectType()
 export class ShoppingCartLine {
-    @Field(() => Int)
-    id: number;
+	@Field(() => Int)
+	id: number;
 
-    @Field(() => Int)
-    shoppingCartId: number;
+	@Field(() => Int)
+	shoppingCartId: number;
 
-    @Field()
-    product: Product;
+	@Field()
+	product: Product;
 
-    @Field(() => Int)
-    productQuantity: number;
+	@Field(() => Int)
+	productQuantity: number;
 
-    @Field()
-    createdAt: Date;
+	@Field()
+	createdAt: Date;
 
-    @Field()
-    updatedAt: Date;
+	@Field()
+	updatedAt: Date;
 }

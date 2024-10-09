@@ -9,9 +9,9 @@ import { PageInfoModel } from 'src/pagination/entities/page-info.entity';
 
 @ObjectType()
 export class ProductConnection implements IPaginatedType<Product> {
-    @Field(() => [ProductEdge], { nullable: 'items' })
-    edges: ProductEdge[];
+	@Field(() => [ProductEdge], { nullable: 'items' })
+	edges: ProductEdge[];
 
-    @Field()
-    pageInfo: PageInfoModel;
+	@Field()
+	pageInfo: PageInfoModel;
 }

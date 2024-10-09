@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ForgotPasswordResponseDto {
 	@ApiProperty({ required: true })
-    resetToken: string;
+	resetToken: string;
 
 	@ApiProperty({ required: true })
-    expiresAt: Date;
+	expiresAt: Date;
 }

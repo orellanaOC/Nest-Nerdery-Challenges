@@ -9,9 +9,9 @@ import { OrderEdge } from '../entities/order-edge.entity';
 
 @ObjectType()
 export class OrderConnection implements IPaginatedType<Order> {
-    @Field(() => [OrderEdge], { nullable: 'items' })
-    edges: OrderEdge[];
+	@Field(() => [OrderEdge], { nullable: 'items' })
+	edges: OrderEdge[];
 
-    @Field()
-    pageInfo: PageInfoModel;
+	@Field()
+	pageInfo: PageInfoModel;
 }

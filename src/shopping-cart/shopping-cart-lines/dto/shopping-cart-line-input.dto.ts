@@ -7,11 +7,11 @@ import { ProductInput } from 'src/products/products/dto/product-input.dto';
 
 @InputType()
 export class ShoppingCartLineInput {
-    @Field()
-    @IsNotEmpty()
-    product: ProductInput;
+	@Field()
+	@IsNotEmpty()
+	product: ProductInput;
 
-    @Field(() => Int)
-    @IsInt()
-    productQuantity: number;
+	@Field(() => Int)
+	@IsInt()
+	productQuantity: number;
 }

@@ -8,18 +8,18 @@ import { CategoryInput } from 'src/products/categories/dto/category-input.dto';
 @InputType()
 export class CreateProductDto {
 	@Field({ nullable: false })
-    @IsNotEmpty()
+	@IsNotEmpty()
 	name: string;
 
 	@Field({ nullable: true })
 	specification?: string;
 
 	@Field(() => Int)
-    @IsInt()
+	@IsInt()
 	price: number;
 
 	@Field(() => Int)
-    @IsInt()
+	@IsInt()
 	stock: number;
 
 	@Field(() => CategoryInput, { nullable: false })

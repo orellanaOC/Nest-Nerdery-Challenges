@@ -6,11 +6,11 @@ import { IsInt, IsString } from 'class-validator';
 
 @InputType()
 export class CategoryInput {
-    @Field(() => Int)
-    @IsInt()
-    id: number;
+	@Field(() => Int)
+	@IsInt()
+	id: number;
 
-    @Field(() => String)
-    @IsString()
-    name: string;
+	@Field(() => String)
+	@IsString()
+	name: string;
 }

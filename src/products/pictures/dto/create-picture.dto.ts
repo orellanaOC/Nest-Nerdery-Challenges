@@ -6,11 +6,11 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class CreatePictureDto {
-    @Field(() => Int, { nullable: false })
-    productId: number;
+	@Field(() => Int, { nullable: false })
+	productId: number;
 
-    @Field(() => String, { nullable: false })
+	@Field(() => String, { nullable: false })
 	@IsNotEmpty()
 	@IsString()
-    imageBase64: string;
+	imageBase64: string;
 }

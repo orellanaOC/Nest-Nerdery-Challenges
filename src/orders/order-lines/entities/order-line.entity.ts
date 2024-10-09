@@ -6,24 +6,24 @@ import { Product } from 'src/products/products/entities/product.entity';
 
 @ObjectType()
 export class OrderLine {
-    @Field(() => Int)
-    id: number;
+	@Field(() => Int)
+	id: number;
 
-    @Field(() => Int)
-    orderId: number;
+	@Field(() => Int)
+	orderId: number;
 
-    @Field()
-    product: Product;
+	@Field()
+	product: Product;
 
-    @Field(() => Int)
-    productQuantity: number;
+	@Field(() => Int)
+	productQuantity: number;
 
-    @Field(() => Int)
-    pricePerItem: number;
+	@Field(() => Int)
+	pricePerItem: number;
 
-    @Field(() => Int)
-    subTotal: number;
+	@Field(() => Int)
+	subTotal: number;
 
-    @Field()
-    createdAt: Date;
+	@Field()
+	createdAt: Date;
 }

@@ -6,12 +6,12 @@ import { ShoppingCartLine } from '../shopping-cart-lines/entities/shopping-cart-
 
 @ObjectType()
 export class ShoppingCart {
-    @Field(() => Int)
-    userId: number;
+	@Field(() => Int)
+	userId: number;
 
-    @Field(() => Int)
-    totalAmount: number;
+	@Field(() => Int)
+	totalAmount: number;
 
-    @Field(() => [ShoppingCartLine], { nullable: 'items' })
-    lines: ShoppingCartLine[];
+	@Field(() => [ShoppingCartLine], { nullable: 'items' })
+	lines: ShoppingCartLine[];
 }

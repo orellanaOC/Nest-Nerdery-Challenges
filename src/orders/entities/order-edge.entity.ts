@@ -7,9 +7,9 @@ import { Edge } from 'src/pagination/entities/pagination.interface';
 
 @ObjectType()
 export class OrderEdge implements Edge<Order> {
-    @Field() 
-    cursor: string;
-    
-    @Field(() => Order) 
-    node: Order;
+	@Field()
+	cursor: string;
+
+	@Field(() => Order)
+	node: Order;
 }
