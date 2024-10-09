@@ -7,6 +7,7 @@ import { BadRequestException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { OrderResponse } from '../dto/order-response.dto';
 
 @Resolver(() => Order)
 export class OrdersResolver {
@@ -21,7 +22,7 @@ export class OrdersResolver {
 		// prettier-ignore
 		@Args('id', { type: () => Int }) id: number,
 		@Context() context: any,
-	): Promise<Order> {
+	): Promise<OrderResponse> {
 		const { user } = context.req;
 		return this.ordersService.findOrderById(id, user.userId, user.roleId);
 	}
@@ -58,7 +59,7 @@ export class OrdersResolver {
 
 	@Mutation(() => Order)
 	@UseGuards(GqlAuthGuard)
-	async checkouts(@Context() context: any): Promise<Order> {
+	async checkouts(@Context() context: any): Promise<OrderResponse> {
 		try {
 			const { user } = context.req;
 

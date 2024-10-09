@@ -10,7 +10,6 @@ import {
 import { PaymentsService } from './payments.service';
 import {
 	ApiBadRequestResponse,
-	ApiExcludeEndpoint,
 	ApiHeader,
 	ApiOperation,
 	ApiResponse,

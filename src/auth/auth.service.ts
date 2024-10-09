@@ -112,7 +112,7 @@ export class AuthService {
 	}
 
 	async signIn(
-		userSignInDto: UserSignInDto,
+		userSignInDto: UserSignInDto
 	): Promise<SignInResponseDto | MessageResponseDto> {
 		const { email, password } = userSignInDto;
 		let user = null;

@@ -17,7 +17,7 @@ export class PicturesService {
 
 		const base64Data = data.imageBase64.replace(
 			/^data:image\/\w+;base64,/,
-			'',
+			''
 		);
 		const buffer = Buffer.from(base64Data, 'base64');
 

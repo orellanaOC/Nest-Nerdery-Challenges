@@ -19,6 +19,7 @@ export class ProductsResolver {
 	async products(
 		// prettier-ignore
 		@Args('pagination', { type: () => PaginationInput, nullable: true }) pagination: PaginationInput,
+		// prettier-ignore
 		@Args('category', { type: () => CategoryFilter, nullable: true }) category?: CategoryFilter,
 	): Promise<ProductConnection> {
 		return this.productService.getAllProducts(pagination, category);

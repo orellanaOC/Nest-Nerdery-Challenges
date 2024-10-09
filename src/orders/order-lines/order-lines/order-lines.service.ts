@@ -44,7 +44,7 @@ export class OrderLinesService {
 		return Promise.all(
 			lines.map(async (line) => {
 				const product = await this.productsService.findOne(
-					line.product.id,
+					line.product.id
 				);
 
 				return {

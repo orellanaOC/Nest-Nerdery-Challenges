@@ -12,6 +12,7 @@ import { OrderFilter } from '../dto/order-filter-input.dto';
 import { OrderConnection } from '../dto/order-connection.entity';
 import { PaginationService } from 'src/pagination/pagination/pagination.service';
 import { PaymentsService } from 'src/payments/payments.service';
+import { OrderResponse } from '../dto/order-response.dto';
 
 @Injectable()
 export class OrdersService {
@@ -20,10 +21,10 @@ export class OrdersService {
 		private readonly orderLineService: OrderLinesService,
 		private readonly shoppingCartService: ShoppingCartsService,
 		private readonly paginationService: PaginationService,
-		private readonly paymentsService: PaymentsService,
+		private readonly paymentsService: PaymentsService
 	) {}
 
-	async createOrderFromCart(userId: number): Promise<Order> {
+	async createOrderFromCart(userId: number): Promise<OrderResponse> {
 		const shoppingCart =
 			await this.shoppingCartService.getShoppingCartByUserId(userId);
 
@@ -37,7 +38,7 @@ export class OrdersService {
 
 		const paymentIntent = await this.paymentsService.createPaymentIntent(
 			totalAmount,
-			'usd',
+			'usd'
 		);
 
 		const newOrder = await this.prisma.order.create({
@@ -52,9 +53,9 @@ export class OrdersService {
 			shoppingCart.lines.map((line) =>
 				this.orderLineService.createOrderLineFromCartLine(
 					newOrder.id,
-					line,
-				),
-			),
+					line
+				)
+			)
 		);
 
 		const orderWithLines = await this.prisma.order.findUnique({
@@ -78,13 +79,13 @@ export class OrdersService {
 
 	async orderStatusChange(
 		paymentIntentId: string,
-		successful: boolean,
-	): Promise<Order> {
+		successful: boolean
+	): Promise<OrderResponse> {
 		const order = await this.findOneByPaymentIntentId(paymentIntentId);
 
 		if (!order) {
 			throw new NotFoundException(
-				`Order not found for PaymentIntent ID: ${paymentIntentId}`,
+				`Order not found for PaymentIntent ID: ${paymentIntentId}`
 			);
 		}
 
@@ -113,7 +114,7 @@ export class OrdersService {
 	}
 
 	async findOneByPaymentIntentId(
-		paymentIntentId: string,
+		paymentIntentId: string
 	): Promise<Order | undefined> {
 		const order = await this.prisma.order.findUnique({
 			where: { paymentIntentId },
@@ -133,6 +134,7 @@ export class OrdersService {
 			userId: order.userId,
 			status: order.status,
 			total: order.total,
+			paymentIntentId: order.paymentIntentId,
 			createdAt: order.createdAt,
 			updatedAt: order.updatedAt,
 			lines: lines,
@@ -142,8 +144,8 @@ export class OrdersService {
 	async findOrderById(
 		id: number,
 		userId?: number,
-		roleId?: number,
-	): Promise<Order> {
+		roleId?: number
+	): Promise<OrderResponse> {
 		const order = await this.prisma.order.findUnique({
 			where: { id },
 			include: {
@@ -157,7 +159,7 @@ export class OrdersService {
 
 		if (roleId !== 2 && order.userId !== userId) {
 			throw new UnauthorizedException(
-				'You do not have access to this order',
+				'You do not have access to this order'
 			);
 		}
 
@@ -176,7 +178,7 @@ export class OrdersService {
 
 	async orders(
 		filter?: OrderFilter,
-		userIdLogged?: number,
+		userIdLogged?: number
 	): Promise<OrderConnection> {
 		// eslint-disable-next-line prefer-const
 		let { status, pagination, userId } = filter || {};
@@ -211,7 +213,7 @@ export class OrdersService {
 						},
 					},
 				},
-			},
+			}
 		);
 	}
 }
