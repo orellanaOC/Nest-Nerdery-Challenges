@@ -55,9 +55,7 @@ export class ProductsService {
 
 	async findOne(id: number): Promise<Product> {
 		const product = await this.prisma.product.findUnique({
-			where: {
-id
-},
+			where: { id },
 			include: {
 				picture: true,
 				category: true,
@@ -84,10 +82,10 @@ id
 			data: {
 				...data,
 				category: {
-connect: {
-id: category.id
-},
-},
+					connect: {
+						id: category.id
+					},
+				},
 			},
 			include: {
 				picture: true,
@@ -98,9 +96,7 @@ id: category.id
 
 	async update(id: number, data: UpdateProductDto): Promise<Product> {
 		const product = await this.prisma.product.findUnique({
-			where: {
-id
-},
+			where: { id },
 			include: {
 				category: true,
 				picture: true,
@@ -128,9 +124,7 @@ id
 		}
 
 		return this.prisma.product.update({
-			where: {
-id
-},
+			where: { id },
 			data: {
 				name: data.name,
 				stock: data.stock,
@@ -139,10 +133,10 @@ id
 				enable: data.enable,
 				category: categoryId
 					? {
-connect: {
-id: categoryId
-}
-}
+						connect: {
+							id: categoryId
+						}
+					}
 					: undefined,
 			},
 			include: {
@@ -159,9 +153,7 @@ id: categoryId
 		let whereClause = undefined;
 
 		if (category) {
-			whereClause = {
-categoryId: category.id,
-};
+			whereClause = { categoryId: category.id, };
 		}
 
 		return this.paginationService.paginate<
@@ -173,19 +165,17 @@ categoryId: category.id,
 			'id', // Cursor field
 			whereClause, // Where clause (optional)
 			{
-createdAt: 'asc'
-} as Prisma.ProductOrderByWithRelationInput, // OrderBy clause (optional)
+				createdAt: 'asc'
+			} as Prisma.ProductOrderByWithRelationInput, // OrderBy clause (optional)
 			{
-picture: true, category: true
-}, // Include clause to fetch related picture and category
+				picture: true, category: true
+			}, // Include clause to fetch related picture and category
 		);
 	}
 
 	async getProductById(id: number) {
 		const product = this.prisma.product.findUnique({
-			where: {
-id
-},
+			where: { id },
 			include: {
 				picture: true,
 				category: true,
@@ -204,22 +194,16 @@ id
 		enable: boolean,
 	): Promise<Product> {
 		const product = await this.prisma.product.findUnique({
-where: {
-id
-},
-});
+			where: { id },
+		});
 
 		if (!product) {
 			throw new NotFoundException(`Product with ID ${id} not found`);
 		}
 
 		return this.prisma.product.update({
-			where: {
-id
-},
-			data: {
-enable
-},
+			where: { id },
+			data: { enable },
 			include: {
 				picture: true,
 				category: true,
@@ -256,7 +240,6 @@ enable
 			};
 		}
 
-		// Save the like
 		await this.prisma.likeProduct.create({
 			data: {
 				userId,
@@ -265,7 +248,7 @@ enable
 		});
 
 		return {
-status: 'liked', message: 'Product liked successfully'
-};
+			status: 'liked', message: 'Product liked successfully'
+		};
 	}
 }

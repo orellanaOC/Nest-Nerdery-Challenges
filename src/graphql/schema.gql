@@ -84,6 +84,7 @@ type Order {
   userId: Int!
   status: OrderStatus!
   total: Int!
+  paymentIntentId: String!
   lines: [OrderLine]!
   createdAt: DateTime!
   updatedAt: DateTime!
