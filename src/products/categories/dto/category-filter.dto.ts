@@ -7,13 +7,9 @@ import {
 
 @InputType()
 export class CategoryFilter {
-	@Field(() => Int, {
-nullable: true
-})
-	id?: string;
+	@Field(() => Int, { nullable: true })
+	id?: number;
 
-	@Field(() => String, {
-nullable: true
-})
+	@Field(() => String, { nullable: true })
 	name?: string;
 }

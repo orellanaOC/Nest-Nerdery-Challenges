@@ -17,6 +17,10 @@ import { Product } from './entities/product.entity';
 import { NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductConnection } from './dto/product-connection.entity';
+import { CategoryFilter } from '../categories/dto/category-filter.dto';
+import { PaginationInput } from 'src/pagination/dto/pagination-input.dto';
+import { ProductEdge } from './entities/product-edge.entity';
 
 const mockPrismaService = {
 	product: {
@@ -24,6 +28,11 @@ const mockPrismaService = {
 		create: jest.fn(),
 		update: jest.fn(),
 		findUnique: jest.fn(),
+	},
+	likeProduct: {
+		findUnique: jest.fn(),
+		delete: jest.fn(),
+		create: jest.fn(),
 	},
 };
 
@@ -334,6 +343,225 @@ describe('ProductsService', () => {
 			await expect(service.update(productId, updateProductDto)).rejects.toThrow(
 				`Category with ID ${updateProductDto.category.id} not found`,
 			);
+		});
+	});
+
+	describe('getAllProducts', () => {
+		it('should return a paginated list of products', async () => {
+			const paginationInput: PaginationInput = { first: 10, after: 'cursor-id' };
+			const mockProducts: Product[] = [
+				{
+					id: 1,
+					name: 'Product 1',
+					specification: 'Description 1',
+					price: 100,
+					picture: [],
+					category: {
+						id: 1,
+						name: 'category 1'
+					},
+					stock: 10, 
+					enable: true, 
+					createdAt: new Date(), 
+					updatedAt: new Date
+				},
+				{
+					id: 2,
+					name: 'Product 2',
+					specification: 'Description 2',
+					price: 200,
+					stock: 10, 
+					enable: true, 
+					createdAt: new Date(), 
+					updatedAt: new Date,
+					picture: [],
+					category: {
+						id: 1,
+						name: 'category 1'
+					},
+				},
+			];
+
+			const mockProductEdges: ProductEdge[] = mockProducts.map(product => ({
+				cursor: `cursor-${product.id}`,
+				node: product,
+			}));
+			const mockPageInfo = {
+				startCursor: mockProductEdges[0].cursor,
+				endCursor: mockProductEdges[mockProductEdges.length - 1].cursor,
+				hasNextPage: false,
+				hasPreviousPage: false,
+			};
+			const mockProductConnection: ProductConnection = {
+				edges: mockProductEdges,
+				pageInfo: mockPageInfo,
+			};
+
+			mockPaginationService.paginate.mockResolvedValue(mockProductConnection);
+
+			const result = await service.getAllProducts(paginationInput);
+
+			expect(result).toEqual(mockProductConnection);
+			expect(mockPaginationService.paginate).toHaveBeenCalledWith(
+				expect.any(Function),
+				paginationInput,
+				'id',
+				undefined,
+				{ createdAt: 'asc' },
+				{ picture: true, category: true },
+			);
+		});
+
+		it('should return a filtered list of products by category', async () => {
+			const mockCategory = { id: 2, name: 'Category 2' };
+			const paginationInput: PaginationInput = { first: 10, after: 'cursor-id' };
+			const categoryFilter: CategoryFilter = mockCategory;
+			const mockProducts: Product[] = [
+				{
+					id: 1,
+					name: 'Product 1',
+					specification: 'Description 1',
+					price: 100,
+					picture: [],
+					category: {
+						id: 1,
+						name: 'category 1'
+					},
+					stock: 10, 
+					enable: true, 
+					createdAt: new Date(), 
+					updatedAt: new Date
+				},
+				{
+					id: 2,
+					name: 'Product 2',
+					specification: 'Description 2',
+					price: 200,
+					stock: 10, 
+					enable: true, 
+					createdAt: new Date(), 
+					updatedAt: new Date,
+					picture: [],
+					category: {
+						id: 1,
+						name: 'category 1'
+					},
+				},
+			];
+			const mockProductEdges: ProductEdge[] = mockProducts.map(product => ({
+				cursor: `cursor-${product.id}`,
+				node: product,
+			}));
+			const mockPageInfo = {
+				startCursor: mockProductEdges[0].cursor,
+				endCursor: mockProductEdges[mockProductEdges.length - 1].cursor,
+				hasNextPage: false,
+				hasPreviousPage: false,
+			};
+			const mockProductConnection: ProductConnection = {
+				edges: mockProductEdges,
+				pageInfo: mockPageInfo,
+			};
+
+			mockPaginationService.paginate.mockResolvedValue(mockProductConnection);
+
+			const result = await service.getAllProducts(paginationInput, categoryFilter);
+
+			expect(result).toEqual(mockProductConnection);
+			expect(mockPaginationService.paginate).toHaveBeenCalledWith(
+				expect.any(Function),
+				paginationInput,
+				'id',
+				{ categoryId: categoryFilter.id },
+				{ createdAt: 'asc' },
+				{ picture: true, category: true },
+			);
+		});
+	});
+
+	describe('toggleProductEnableStatus', () => {
+		it('should enable/disable a product and return the updated product', async () => {
+			const id = 1;
+			const enable = true;
+			const mockProduct: Product = {
+				id,
+				name: 'Sample Product',
+				stock: 10,
+				price: 100,
+				enable: !enable,
+				picture: [],
+				category: {
+					id: 1,
+					name: "category 1",
+				},
+				createdAt: new Date,
+				updatedAt: new Date
+			};
+
+			mockPrismaService.product.findUnique.mockResolvedValue(mockProduct);
+			mockPrismaService.product.update.mockResolvedValue({
+				...mockProduct,
+				enable,
+			});
+
+			const result = await service.toggleProductEnableStatus(id, enable);
+
+			expect(result.enable).toBe(enable);
+			expect(mockPrismaService.product.findUnique).toHaveBeenCalledWith({
+				where: { id },
+			});
+			expect(mockPrismaService.product.update).toHaveBeenCalledWith({
+				where: { id },
+				data: { enable },
+				include: { picture: true, category: true },
+			});
+		});
+
+		it('should throw NotFoundException if product does not exist', async () => {
+			const id = 999;
+			const enable = true;
+
+			mockPrismaService.product.findUnique.mockResolvedValue(null);
+
+			await expect(service.toggleProductEnableStatus(id, enable)).rejects.toThrow(NotFoundException);
+		});
+	});
+
+	describe('toggleLikeProduct', () => {
+		it('should like a product if not already liked', async () => {
+			const userId = 1;
+			const productId = 2;
+
+			mockPrismaService.likeProduct.findUnique.mockResolvedValue(null);
+
+			const result = await service.toggleLikeProduct(userId, productId);
+
+			expect(result).toEqual({
+				status: 'liked',
+				message: 'Product liked successfully',
+			});
+
+			expect(mockPrismaService.likeProduct.create).toHaveBeenCalledWith({
+				data: { userId, productId },
+			});
+		});
+
+		it('should unlike a product if already liked', async () => {
+			const userId = 1;
+			const productId = 2;
+
+			mockPrismaService.likeProduct.findUnique.mockResolvedValue({ userId, productId });
+
+			const result = await service.toggleLikeProduct(userId, productId);
+
+			expect(result).toEqual({
+				status: 'unliked',
+				message: 'Product unliked successfully',
+			});
+
+			expect(mockPrismaService.likeProduct.delete).toHaveBeenCalledWith({
+				where: { userId_productId: { userId, productId } },
+			});
 		});
 	});
 });

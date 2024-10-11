@@ -2,7 +2,7 @@
 /* eslint-disable indent */
 
 import {
- Field, Int, InputType 
+	Field, Int, InputType 
 } from '@nestjs/graphql';
 import {
 IsInt, IsString
