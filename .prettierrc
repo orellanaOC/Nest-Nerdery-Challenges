@@ -17,5 +17,35 @@
   "requirePragma": true,
   "tabWidth": 4,
   "useTabs": true,
-  "embeddedLanguageFormatting": "auto"
+  "embeddedLanguageFormatting": "auto",
+  "importOrder": [
+    "^@nestjs/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": [
+    "prettier-plugin-organize-imports"
+  ],
+  "overrides": [
+    {
+      "files": "*.ts",
+      "options": {
+        "importOrderParserPlugins": [
+          "typescript",
+          "decorators-legacy"
+        ],
+        "importOrderCaseInsensitive": true,
+        "importOrderGroupNamespaceSpecifiers": true,
+        "importOrderSeparation": true,
+        "importOrder": [
+          "^@nestjs/(.*)$",
+          "^[./]"
+        ],
+        "importOrderBuiltinModulesToTop": true,
+        "importOrderCombineTypeAndValueImports": true,
+        "importOrderMergeDuplicateImports": true
+      }
+    }
+  ]
 }
