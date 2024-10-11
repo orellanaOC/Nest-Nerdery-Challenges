@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Injectable
 } from '@nestjs/common';
 import {
@@ -14,6 +15,13 @@ import * as path from 'path';
 export class PicturesService {
 	constructor(private readonly prisma: PrismaService) {}
 
+	private validateBase64Image(base64Data: string): boolean {
+		if (!base64Data) return false;
+
+		const buffer = Buffer.from(base64Data, 'base64').toString('base64');
+		return buffer === base64Data;
+	}
+
 	async create(data: CreatePictureDto) {
 		const fileName = `${Date.now()}-${data.productId}.jpg`;
 		const uploadDir = path.join(__dirname, '..', '..', 'uploads');
@@ -27,6 +35,11 @@ export class PicturesService {
 			/^data:image\/\w+;base64,/,
 			''
 		);
+
+		if (!this.validateBase64Image(base64Data)) {
+			throw new BadRequestException('Invalid imageBase64 format.');
+		}
+
 		const buffer = Buffer.from(base64Data, 'base64');
 
 		await fs.promises.writeFile(filePath, buffer);

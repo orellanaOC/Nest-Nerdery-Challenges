@@ -10,6 +10,7 @@ import {
 import {
 	CreatePictureDto
 } from './dto/create-picture.dto';
+import { BadRequestException } from '@nestjs/common';
 
 const mockPrismaService = {
 	picture: {
@@ -22,6 +23,8 @@ describe('PicturesService', () => {
 	let service: PicturesService;
 
 	beforeEach(async () => {
+		jest.clearAllMocks();
+
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				PicturesService,
@@ -42,19 +45,21 @@ describe('PicturesService', () => {
 		it('should create a picture and return it', async () => {
 			const createPictureDto: CreatePictureDto = {
 				productId: 1,
-				imageBase64: 'data:image/jpeg;base64,...',
+				imageBase64: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA',
 			};
-
+	
 			const result = {
 				id: 1,
 				productId: createPictureDto.productId,
-				imageUrl: 'some-image.jpg',
+				imageUrl: expect.any(String),
 			};
-
+	
 			mockPrismaService.picture.create.mockResolvedValue(result);
 
+			jest.spyOn(service as any, 'validateBase64Image').mockReturnValue(true);
+	
 			const response = await service.create(createPictureDto);
-
+	
 			expect(response).toEqual(result);
 			expect(mockPrismaService.picture.create).toHaveBeenCalledWith({
 				data: {
@@ -62,16 +67,18 @@ describe('PicturesService', () => {
 					imageUrl: expect.any(String),
 				},
 			});
+	
+			jest.restoreAllMocks();
 		});
 
-		// it('should throw an error if imageBase64 is not valid', async () => {
-		// 	const createPictureDto: CreatePictureDto = {
-		// 		productId: 1,
-		// 		imageBase64: '',
-		// 	};
+		it('should throw an error if imageBase64 is not valid', async () => {
+			const createPictureDto: CreatePictureDto = {
+				productId: 1,
+				imageBase64: '',
+			};
 
-		// 	await expect(service.create(createPictureDto)).rejects.toThrow();
-		// });
+			await expect(service.create(createPictureDto)).rejects.toThrow(BadRequestException);
+		});
 	});
 
 	describe('findAllByProductId', () => {
