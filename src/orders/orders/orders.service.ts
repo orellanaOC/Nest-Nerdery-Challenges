@@ -3,16 +3,36 @@ import {
 	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { OrderLinesService } from '../order-lines/order-lines/order-lines.service';
-import { ShoppingCartsService } from 'src/shopping-cart/shopping-cart/shopping-cart.service';
-import { Order } from '../entities/order.entity';
-import { OrderStatus, Prisma } from '@prisma/client';
-import { OrderFilter } from '../dto/order-filter-input.dto';
-import { OrderConnection } from '../dto/order-connection.entity';
-import { PaginationService } from 'src/pagination/pagination/pagination.service';
-import { PaymentsService } from 'src/payments/payments.service';
-import { OrderResponse } from '../dto/order-response.dto';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	OrderLinesService
+} from '../order-lines/order-lines/order-lines.service';
+import {
+	ShoppingCartsService
+} from 'src/shopping-cart/shopping-cart/shopping-cart.service';
+import {
+	Order
+} from '../entities/order.entity';
+import {
+	OrderStatus, Prisma
+} from '@prisma/client';
+import {
+	OrderFilter
+} from '../dto/order-filter-input.dto';
+import {
+	OrderConnection
+} from '../dto/order-connection.entity';
+import {
+	PaginationService
+} from 'src/pagination/pagination/pagination.service';
+import {
+	PaymentsService
+} from 'src/payments/payments.service';
+import {
+	OrderResponse
+} from '../dto/order-response.dto';
 
 @Injectable()
 export class OrdersService {
@@ -59,7 +79,9 @@ export class OrdersService {
 		);
 
 		const orderWithLines = await this.prisma.order.findUnique({
-			where: { id: newOrder.id },
+			where: {
+				id: newOrder.id
+			},
 			include: {
 				lines: {
 					include: {
@@ -94,7 +116,9 @@ export class OrdersService {
 		}
 
 		return await this.prisma.order.update({
-			where: { id: order.id },
+			where: {
+				id: order.id
+			},
 			data: {
 				status: successful ? OrderStatus.SUCCEEDED : OrderStatus.FAILED,
 			},
@@ -117,7 +141,9 @@ export class OrdersService {
 		paymentIntentId: string
 	): Promise<Order | undefined> {
 		const order = await this.prisma.order.findUnique({
-			where: { paymentIntentId },
+			where: {
+				paymentIntentId
+			},
 			include: {
 				lines: true,
 			},
@@ -147,7 +173,9 @@ export class OrdersService {
 		roleId?: number
 	): Promise<OrderResponse> {
 		const order = await this.prisma.order.findUnique({
-			where: { id },
+			where: {
+				id
+			},
 			include: {
 				lines: true,
 			},
@@ -180,8 +208,10 @@ export class OrdersService {
 		filter?: OrderFilter,
 		userIdLogged?: number
 	): Promise<OrderConnection> {
-		// eslint-disable-next-line prefer-const
-		let { status, pagination, userId } = filter || {};
+		let {
+			// eslint-disable-next-line prefer-const
+			status, pagination, userId 
+		} = filter || {};
 
 		if (userIdLogged) {
 			userId = userIdLogged;
@@ -201,7 +231,9 @@ export class OrdersService {
 			pagination,
 			'id',
 			whereClause,
-			{ createdAt: 'asc' } as Prisma.OrderOrderByWithRelationInput,
+			{
+				createdAt: 'asc'
+			} as Prisma.OrderOrderByWithRelationInput,
 			{
 				lines: {
 					include: {

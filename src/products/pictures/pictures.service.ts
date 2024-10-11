@@ -1,6 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { CreatePictureDto } from './dto/create-picture.dto';
+import {
+	Injectable
+} from '@nestjs/common';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	CreatePictureDto
+} from './dto/create-picture.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -13,7 +19,9 @@ export class PicturesService {
 		const uploadDir = path.join(__dirname, '..', '..', 'uploads');
 		const filePath = path.join(__dirname, '..', '..', 'uploads', fileName);
 
-		await fs.promises.mkdir(uploadDir, { recursive: true });
+		await fs.promises.mkdir(uploadDir, {
+			recursive: true
+		});
 
 		const base64Data = data.imageBase64.replace(
 			/^data:image\/\w+;base64,/,
@@ -33,7 +41,9 @@ export class PicturesService {
 
 	async findAllByProductId(productId: number) {
 		return this.prisma.picture.findMany({
-			where: { productId },
+			where: {
+				productId
+			},
 		});
 	}
 }

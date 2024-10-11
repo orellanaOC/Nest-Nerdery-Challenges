@@ -7,10 +7,18 @@ import {
 	Request,
 	HttpStatus,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UserSignUpDto } from '../users/dto/user-sign-up.dto';
-import { UserSignInDto } from '../users/dto/user-sign-in.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import {
+	AuthService
+} from './auth.service';
+import {
+	UserSignUpDto
+} from '../users/dto/user-sign-up.dto';
+import {
+	UserSignInDto
+} from '../users/dto/user-sign-in.dto';
+import {
+	ForgotPasswordDto
+} from './dto/forgot-password.dto';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
@@ -21,13 +29,27 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { SignUpResponseDto } from './dto/sign-up-response.dto';
-import { MessageResponseDto } from './dto/message-response.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { NewPasswordDto } from './dto/new-password.dto';
-import { SignInResponseDto } from './dto/sign-in-response.dto';
-import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
+import {
+	SignUpResponseDto
+} from './dto/sign-up-response.dto';
+import {
+	MessageResponseDto
+} from './dto/message-response.dto';
+import {
+	JwtAuthGuard
+} from './guards/jwt-auth.guard';
+import {
+	ResetPasswordDto
+} from './dto/reset-password.dto';
+import {
+	NewPasswordDto
+} from './dto/new-password.dto';
+import {
+	SignInResponseDto
+} from './dto/sign-in-response.dto';
+import {
+	ForgotPasswordResponseDto
+} from './dto/forgot-password-response.dto';
 
 @Controller('auth')
 @ApiTags('auth')

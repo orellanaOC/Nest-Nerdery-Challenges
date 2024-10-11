@@ -1,5 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationService } from './pagination.service';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	PaginationService
+} from './pagination.service';
 
 describe('PaginationService', () => {
 	let service: PaginationService;

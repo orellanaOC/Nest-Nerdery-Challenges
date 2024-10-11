@@ -1,8 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Role } from './role.entity';
+import {
+ ObjectType, Field, Int 
+} from '@nestjs/graphql';
+import {
+Role
+} from './role.entity';
 
 @ObjectType()
 export class User {

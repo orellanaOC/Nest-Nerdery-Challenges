@@ -1,9 +1,15 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
-import { OrderLine } from '../order-lines/entities/order-line.entity';
-import { OrderStatus } from '@prisma/client';
+import {
+ ObjectType, Field, Int, registerEnumType 
+} from '@nestjs/graphql';
+import {
+OrderLine
+} from '../order-lines/entities/order-line.entity';
+import {
+OrderStatus
+} from '@prisma/client';
 
 registerEnumType(OrderStatus, {
 	name: 'OrderStatus',
@@ -27,7 +33,9 @@ export class Order {
 	@Field(() => String)
 	paymentIntentId: string;
 
-	@Field(() => [OrderLine], { nullable: 'items' })
+	@Field(() => [OrderLine], {
+nullable: 'items'
+})
 	lines: OrderLine[];
 
 	@Field()

@@ -1,8 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProductsService } from './products.service';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { CategoriesService } from '../categories/categories.service';
-import { PaginationService } from 'src/pagination/pagination/pagination.service';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	ProductsService
+} from './products.service';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	CategoriesService
+} from '../categories/categories.service';
+import {
+	PaginationService
+} from 'src/pagination/pagination/pagination.service';
 
 const mockPrismaService = {
 	product: {
@@ -27,9 +37,15 @@ describe('ProductsService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				ProductsService,
-				{ provide: PrismaService, useValue: mockPrismaService },
-				{ provide: CategoriesService, useValue: mockCategoriesService },
-				{ provide: PaginationService, useValue: mockPaginationService },
+				{
+					provide: PrismaService, useValue: mockPrismaService
+				},
+				{
+					provide: CategoriesService, useValue: mockCategoriesService
+				},
+				{
+					provide: PaginationService, useValue: mockPaginationService
+				},
 			],
 		}).compile();
 

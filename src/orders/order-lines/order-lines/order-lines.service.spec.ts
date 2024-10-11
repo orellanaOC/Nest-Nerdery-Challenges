@@ -1,8 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OrderLinesService } from './order-lines.service';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { ShoppingCartLine } from 'src/shopping-cart/shopping-cart-lines/entities/shopping-cart-line.entity';
-import { ProductsService } from 'src/products/products/products.service';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	OrderLinesService
+} from './order-lines.service';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	ShoppingCartLine
+} from 'src/shopping-cart/shopping-cart-lines/entities/shopping-cart-line.entity';
+import {
+	ProductsService
+} from 'src/products/products/products.service';
 
 const mockPrismaService = {
 	orderLine: {
@@ -22,8 +32,12 @@ describe('OrderLinesService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				OrderLinesService,
-				{ provide: PrismaService, useValue: mockPrismaService },
-				{ provide: ProductsService, useValue: mockProductsService },
+				{
+					provide: PrismaService, useValue: mockPrismaService
+				},
+				{
+					provide: ProductsService, useValue: mockProductsService
+				},
 			],
 		}).compile();
 
@@ -179,7 +193,9 @@ describe('OrderLinesService', () => {
 				stock: 10,
 				specification: 'Some specification',
 				enable: true,
-				category: { id: 2, name: 'mock category' },
+				category: {
+					id: 2, name: 'mock category'
+				},
 				picture: [],
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -192,7 +208,9 @@ describe('OrderLinesService', () => {
 				stock: 5,
 				specification: 'Some specification',
 				enable: true,
-				category: { id: 3, name: 'mock category 2' },
+				category: {
+					id: 3, name: 'mock category 2'
+				},
 				picture: [],
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -226,7 +244,9 @@ describe('OrderLinesService', () => {
 			]);
 
 			expect(mockPrismaService.orderLine.findMany).toHaveBeenCalledWith({
-				where: { orderId },
+				where: {
+					orderId
+				},
 				include: {
 					product: {
 						include: {

@@ -1,7 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CategoriesService } from './categories.service';
-import { PrismaService } from '../../../prisma/prisma/prisma.service';
-import { NotFoundException } from '@nestjs/common';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	CategoriesService
+} from './categories.service';
+import {
+	PrismaService
+} from '../../../prisma/prisma/prisma.service';
+import {
+	NotFoundException
+} from '@nestjs/common';
 
 describe('CategoriesService', () => {
 	let service: CategoriesService;
@@ -15,7 +23,9 @@ describe('CategoriesService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				CategoriesService,
-				{ provide: PrismaService, useValue: mockPrismaService },
+				{
+					provide: PrismaService, useValue: mockPrismaService
+				},
 			],
 		}).compile();
 
@@ -28,7 +38,9 @@ describe('CategoriesService', () => {
 
 	describe('findOne', () => {
 		it('should return a category when it exists', async () => {
-			const category = { id: 1, name: 'Test Category' };
+			const category = {
+				id: 1, name: 'Test Category'
+			};
 			mockPrismaService.category.findUnique.mockResolvedValue(category);
 
 			const result = await service.findOne(1);

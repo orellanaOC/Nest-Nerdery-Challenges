@@ -1,6 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ShoppingCartsService } from './shopping-cart.service';
-import { ShoppingCartResolver } from './shopping-cart.resolver';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	ShoppingCartsService
+} from './shopping-cart.service';
+import {
+	ShoppingCartResolver
+} from './shopping-cart.resolver';
 
 const mockShoppingCartsService = {};
 

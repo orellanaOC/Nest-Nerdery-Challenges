@@ -1,11 +1,27 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersService } from './orders.service';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { OrderLinesService } from '../order-lines/order-lines/order-lines.service';
-import { ShoppingCartsService } from 'src/shopping-cart/shopping-cart/shopping-cart.service';
-import { PaginationService } from 'src/pagination/pagination/pagination.service';
-import { PaymentsService } from 'src/payments/payments.service';
-import { OrderLine } from '../order-lines/entities/order-line.entity';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	OrdersService
+} from './orders.service';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	OrderLinesService
+} from '../order-lines/order-lines/order-lines.service';
+import {
+	ShoppingCartsService
+} from 'src/shopping-cart/shopping-cart/shopping-cart.service';
+import {
+	PaginationService
+} from 'src/pagination/pagination/pagination.service';
+import {
+	PaymentsService
+} from 'src/payments/payments.service';
+import {
+	OrderLine
+} from '../order-lines/entities/order-line.entity';
 
 const mockPrismaService = {
 	order: {
@@ -40,14 +56,22 @@ describe('OrdersService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				OrdersService,
-				{ provide: PrismaService, useValue: mockPrismaService },
-				{ provide: OrderLinesService, useValue: mockOrderLinesService },
+				{
+					provide: PrismaService, useValue: mockPrismaService
+				},
+				{
+					provide: OrderLinesService, useValue: mockOrderLinesService
+				},
 				{
 					provide: ShoppingCartsService,
 					useValue: mockShoppingCartsService,
 				},
-				{ provide: PaginationService, useValue: mockPaginationService },
-				{ provide: PaymentsService, useValue: mockPaymentsService },
+				{
+					provide: PaginationService, useValue: mockPaginationService
+				},
+				{
+					provide: PaymentsService, useValue: mockPaymentsService
+				},
 			],
 		}).compile();
 
@@ -63,13 +87,23 @@ describe('OrdersService', () => {
 			const userId = 1;
 			const shoppingCart = {
 				lines: [
-					{ product: { price: 100 }, productQuantity: 2 },
-					{ product: { price: 200 }, productQuantity: 1 },
+					{
+						product: {
+							price: 100
+						}, productQuantity: 2
+					},
+					{
+						product: {
+							price: 200
+						}, productQuantity: 1
+					},
 				],
 			};
 
 			const totalAmount = 400; // (100 * 2) + (200 * 1)
-			const paymentIntent = { id: 'payment_intent_id' };
+			const paymentIntent = {
+				id: 'payment_intent_id'
+			};
 
 			mockShoppingCartsService.getShoppingCartByUserId.mockResolvedValue(
 				shoppingCart
@@ -158,7 +192,9 @@ describe('OrdersService', () => {
 						stock: 10,
 						specification: 'Some specification',
 						enable: true,
-						category: { id: 2, name: 'mock category' },
+						category: {
+							id: 2, name: 'mock category'
+						},
 						picture: [],
 						createdAt: new Date(),
 						updatedAt: new Date(),
@@ -186,8 +222,12 @@ describe('OrdersService', () => {
 			});
 
 			expect(mockPrismaService.order.findUnique).toHaveBeenCalledWith({
-				where: { paymentIntentId },
-				include: { lines: true },
+				where: {
+					paymentIntentId
+				},
+				include: {
+					lines: true
+				},
 			});
 		});
 	});

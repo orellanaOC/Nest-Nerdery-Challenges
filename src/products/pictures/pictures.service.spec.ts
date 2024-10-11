@@ -1,7 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PicturesService } from './pictures.service';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { CreatePictureDto } from './dto/create-picture.dto';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	PicturesService
+} from './pictures.service';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	CreatePictureDto
+} from './dto/create-picture.dto';
 
 const mockPrismaService = {
 	picture: {
@@ -17,7 +25,9 @@ describe('PicturesService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				PicturesService,
-				{ provide: PrismaService, useValue: mockPrismaService },
+				{
+					provide: PrismaService, useValue: mockPrismaService
+				},
 			],
 		}).compile();
 
@@ -68,8 +78,12 @@ describe('PicturesService', () => {
 		it('should return an array of pictures', async () => {
 			const productId = 1;
 			const pictures = [
-				{ id: 1, productId, imageUrl: 'image1.jpg' },
-				{ id: 2, productId, imageUrl: 'image2.jpg' },
+				{
+					id: 1, productId, imageUrl: 'image1.jpg' 
+				},
+				{
+					id: 2, productId, imageUrl: 'image2.jpg' 
+				},
 			];
 
 			mockPrismaService.picture.findMany.mockResolvedValue(pictures);
@@ -78,7 +92,9 @@ describe('PicturesService', () => {
 
 			expect(result).toEqual(pictures);
 			expect(mockPrismaService.picture.findMany).toHaveBeenCalledWith({
-				where: { productId },
+				where: {
+					productId
+				},
 			});
 		});
 	});

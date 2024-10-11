@@ -1,8 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { ShoppingCartLinesService } from '../shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.service';
-import { ShoppingCart } from '../entities/shopping-cart.entity';
-import { ShoppingCartLineInput } from '../shopping-cart-lines/dto/shopping-cart-line-input.dto';
+import {
+	Injectable, NotFoundException
+} from '@nestjs/common';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	ShoppingCartLinesService
+} from '../shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.service';
+import {
+	ShoppingCart
+} from '../entities/shopping-cart.entity';
+import {
+	ShoppingCartLineInput
+} from '../shopping-cart-lines/dto/shopping-cart-line-input.dto';
 
 @Injectable()
 export class ShoppingCartsService {
@@ -13,7 +23,9 @@ export class ShoppingCartsService {
 
 	async getShoppingCartByUserId(userId: number): Promise<ShoppingCart> {
 		const cart = await this.prismaService.shoppingCart.findUnique({
-			where: { userId },
+			where: {
+				userId
+			},
 			include: {
 				lines: true,
 			},
@@ -42,7 +54,9 @@ export class ShoppingCartsService {
 	): Promise<ShoppingCart> {
 		// Get the shopping cart of the user
 		const cart = await this.prismaService.shoppingCart.findUnique({
-			where: { userId },
+			where: {
+				userId
+			},
 		});
 
 		if (!cart) {
@@ -65,8 +79,12 @@ export class ShoppingCartsService {
 
 		// Update the shopping cart total amount
 		await this.prismaService.shoppingCart.update({
-			where: { userId: cart.userId },
-			data: { total: totalAmount },
+			where: {
+				userId: cart.userId
+			},
+			data: {
+				total: totalAmount
+			},
 		});
 
 		// Return the updated shopping cart with the new lines
@@ -79,7 +97,9 @@ export class ShoppingCartsService {
 
 	async clearShoppingCart(userId: number) {
 		await this.prismaService.shoppingCartLine.deleteMany({
-			where: { shoppingCartId: userId },
+			where: {
+				shoppingCartId: userId
+			},
 		});
 	}
 }

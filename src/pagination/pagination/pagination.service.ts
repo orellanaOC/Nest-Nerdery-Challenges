@@ -5,7 +5,9 @@ import {
 	IPageInfoModel,
 	IPaginatedType,
 } from '../entities/pagination.interface';
-import { PaginationInput } from '../dto/pagination-input.dto';
+import {
+PaginationInput
+} from '../dto/pagination-input.dto';
 
 export class PaginationService {
 	async paginate<
@@ -19,13 +21,19 @@ export class PaginationService {
 		orderByClause?: FindManyArgs['orderBy'],
 		includeClause?: FindManyArgs['include'],
 	): Promise<IPaginatedType<T>> {
-		const { first, after, last, before } = paginationInput;
+		const {
+ first, after, last, before 
+} = paginationInput;
 
-		let cursor = after ? { [cursorField]: parseInt(after, 10) } : undefined;
+		let cursor = after ? {
+[cursorField]: parseInt(after, 10)
+} : undefined;
 
 		// If paginating backwards with 'before', set the cursor accordingly
 		if (before) {
-			cursor = { [cursorField]: parseInt(before, 10) };
+			cursor = {
+[cursorField]: parseInt(before, 10)
+};
 		}
 
 		// Define the direction of ordering and the number of elements to take
@@ -40,7 +48,9 @@ export class PaginationService {
 		// Fetch items using the cursor and filters
 		const edges = await findMany({
 			where: whereClause,
-			orderBy: orderByClause || { [cursorField]: 'asc' },
+			orderBy: orderByClause || {
+[cursorField]: 'asc'
+},
 			take,
 			skip,
 			cursor,
@@ -60,7 +70,9 @@ export class PaginationService {
 			? !!(
 					await findMany({
 						where: whereClause
-							? { ...(whereClause as object) }
+							? {
+...(whereClause as object)
+}
 							: {
 									[cursorField]: {
 										gt: edges[edges.length - 1][
@@ -68,10 +80,14 @@ export class PaginationService {
 										],
 									},
 								},
-						cursor: { [cursorField]: parseInt(endCursor, 10) },
+						cursor: {
+[cursorField]: parseInt(endCursor, 10)
+},
 						skip: 1,
 						take: 1,
-						orderBy: { [cursorField]: 'asc' },
+						orderBy: {
+[cursorField]: 'asc'
+},
 						include: includeClause,
 					} as unknown as FindManyArgs)
 				).length
@@ -81,12 +97,22 @@ export class PaginationService {
 			? !!(
 					await findMany({
 						where: whereClause
-							? { ...(whereClause as object) }
-							: { [cursorField]: { lt: edges[0][cursorField] } },
-						cursor: { [cursorField]: parseInt(startCursor, 10) },
+							? {
+...(whereClause as object)
+}
+							: {
+[cursorField]: {
+lt: edges[0][cursorField]
+}
+},
+						cursor: {
+[cursorField]: parseInt(startCursor, 10)
+},
 						skip: 1,
 						take: 1,
-						orderBy: { [cursorField]: 'desc' }, // Searching backwards
+						orderBy: {
+[cursorField]: 'desc'
+}, // Searching backwards
 						include: includeClause,
 					} as unknown as FindManyArgs)
 				).length

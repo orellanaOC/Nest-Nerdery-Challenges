@@ -1,5 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OrderLinesResolver } from './order-lines.resolver';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	OrderLinesResolver
+} from './order-lines.resolver';
 
 describe('OrderLinesResolver', () => {
 	let resolver: OrderLinesResolver;

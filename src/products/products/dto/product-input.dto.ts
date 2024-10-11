@@ -1,8 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { Field, Int, InputType } from '@nestjs/graphql';
-import { CategoryInput } from 'src/products/categories/dto/category-input.dto';
+import {
+ Field, Int, InputType 
+} from '@nestjs/graphql';
+import {
+CategoryInput
+} from 'src/products/categories/dto/category-input.dto';
 
 @InputType()
 export class ProductInput {

@@ -1,7 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PicturesResolver } from './pictures.resolver';
-import { PicturesService } from './pictures.service';
-import { PrismaService } from 'prisma/prisma/prisma.service';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	PicturesResolver
+} from './pictures.resolver';
+import {
+	PicturesService
+} from './pictures.service';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
 
 const mockPicturesService = {
 	create: jest.fn(),
@@ -15,7 +23,9 @@ describe('PicturesResolver', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				PicturesResolver,
-				{ provide: PicturesService, useValue: mockPicturesService },
+				{
+					provide: PicturesService, useValue: mockPicturesService
+				},
 				PrismaService,
 			],
 		}).compile();

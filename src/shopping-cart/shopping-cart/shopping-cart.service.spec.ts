@@ -1,7 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ShoppingCartsService } from './shopping-cart.service';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { ShoppingCartLinesService } from '../shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.service';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	ShoppingCartsService
+} from './shopping-cart.service';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	ShoppingCartLinesService
+} from '../shopping-cart-lines/shopping-cart-lines/shopping-cart-lines.service';
 
 const mockPrismaService = {};
 
@@ -14,7 +22,9 @@ describe('ShoppingCartsService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				ShoppingCartsService,
-				{ provide: PrismaService, useValue: mockPrismaService },
+				{
+					provide: PrismaService, useValue: mockPrismaService
+				},
 				{
 					provide: ShoppingCartLinesService,
 					useValue: mockShoppingCartLinesService,

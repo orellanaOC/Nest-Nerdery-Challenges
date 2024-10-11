@@ -1,16 +1,40 @@
 /* eslint-disable indent */
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma/prisma.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { Product } from './entities/product.entity';
-import { CategoriesService } from '../categories/categories.service';
-import { Message } from '../messages/entities/message.entity';
-import { PaginationInput } from 'src/pagination/dto/pagination-input.dto';
-import { ProductConnection } from './dto/product-connection.entity';
-import { PaginationService } from 'src/pagination/pagination/pagination.service';
-import { Prisma } from '@prisma/client';
-import { CategoryFilter } from '../categories/dto/category-filter.dto';
+import {
+Injectable, NotFoundException
+} from '@nestjs/common';
+import {
+PrismaService
+} from '../../../prisma/prisma/prisma.service';
+import {
+CreateProductDto
+} from './dto/create-product.dto';
+import {
+UpdateProductDto
+} from './dto/update-product.dto';
+import {
+Product
+} from './entities/product.entity';
+import {
+CategoriesService
+} from '../categories/categories.service';
+import {
+Message
+} from '../messages/entities/message.entity';
+import {
+PaginationInput
+} from 'src/pagination/dto/pagination-input.dto';
+import {
+ProductConnection
+} from './dto/product-connection.entity';
+import {
+PaginationService
+} from 'src/pagination/pagination/pagination.service';
+import {
+Prisma
+} from '@prisma/client';
+import {
+CategoryFilter
+} from '../categories/dto/category-filter.dto';
 
 @Injectable()
 export class ProductsService {
@@ -31,7 +55,9 @@ export class ProductsService {
 
 	async findOne(id: number): Promise<Product> {
 		const product = await this.prisma.product.findUnique({
-			where: { id },
+			where: {
+id
+},
 			include: {
 				picture: true,
 				category: true,
@@ -58,8 +84,10 @@ export class ProductsService {
 			data: {
 				...data,
 				category: {
-					connect: { id: category.id },
-				},
+connect: {
+id: category.id
+},
+},
 			},
 			include: {
 				picture: true,
@@ -70,7 +98,9 @@ export class ProductsService {
 
 	async update(id: number, data: UpdateProductDto): Promise<Product> {
 		const product = await this.prisma.product.findUnique({
-			where: { id },
+			where: {
+id
+},
 			include: {
 				category: true,
 				picture: true,
@@ -98,7 +128,9 @@ export class ProductsService {
 		}
 
 		return this.prisma.product.update({
-			where: { id },
+			where: {
+id
+},
 			data: {
 				name: data.name,
 				stock: data.stock,
@@ -106,7 +138,11 @@ export class ProductsService {
 				specification: data.specification,
 				enable: data.enable,
 				category: categoryId
-					? { connect: { id: categoryId } }
+					? {
+connect: {
+id: categoryId
+}
+}
 					: undefined,
 			},
 			include: {
@@ -124,8 +160,8 @@ export class ProductsService {
 
 		if (category) {
 			whereClause = {
-				categoryId: category.id,
-			};
+categoryId: category.id,
+};
 		}
 
 		return this.paginationService.paginate<
@@ -136,14 +172,20 @@ export class ProductsService {
 			pagination,
 			'id', // Cursor field
 			whereClause, // Where clause (optional)
-			{ createdAt: 'asc' } as Prisma.ProductOrderByWithRelationInput, // OrderBy clause (optional)
-			{ picture: true, category: true }, // Include clause to fetch related picture and category
+			{
+createdAt: 'asc'
+} as Prisma.ProductOrderByWithRelationInput, // OrderBy clause (optional)
+			{
+picture: true, category: true
+}, // Include clause to fetch related picture and category
 		);
 	}
 
 	async getProductById(id: number) {
 		const product = this.prisma.product.findUnique({
-			where: { id },
+			where: {
+id
+},
 			include: {
 				picture: true,
 				category: true,
@@ -162,16 +204,22 @@ export class ProductsService {
 		enable: boolean,
 	): Promise<Product> {
 		const product = await this.prisma.product.findUnique({
-			where: { id },
-		});
+where: {
+id
+},
+});
 
 		if (!product) {
 			throw new NotFoundException(`Product with ID ${id} not found`);
 		}
 
 		return this.prisma.product.update({
-			where: { id },
-			data: { enable },
+			where: {
+id
+},
+			data: {
+enable
+},
 			include: {
 				picture: true,
 				category: true,
@@ -216,6 +264,8 @@ export class ProductsService {
 			},
 		});
 
-		return { status: 'liked', message: 'Product liked successfully' };
+		return {
+status: 'liked', message: 'Product liked successfully'
+};
 	}
 }

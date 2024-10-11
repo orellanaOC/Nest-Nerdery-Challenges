@@ -1,8 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PaymentsService } from './payments.service';
-import { ConfigService } from '@nestjs/config';
-import { OrdersService } from 'src/orders/orders/orders.service';
-import Stripe from 'stripe';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	PaymentsService
+} from './payments.service';
+import {
+	ConfigService
+} from '@nestjs/config';
+import {
+	OrdersService
+} from 'src/orders/orders/orders.service';
 
 const mockConfigService = {
 	get: jest.fn((key: string) => {
@@ -22,8 +29,12 @@ describe('PaymentsService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				PaymentsService,
-				{ provide: ConfigService, useValue: mockConfigService },
-				{ provide: OrdersService, useValue: mockOrdersService },
+				{
+					provide: ConfigService, useValue: mockConfigService
+				},
+				{
+					provide: OrdersService, useValue: mockOrdersService
+				},
 			],
 		}).compile();
 

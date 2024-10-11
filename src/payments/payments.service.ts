@@ -5,8 +5,12 @@ import {
 	Inject,
 	Injectable,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { OrdersService } from 'src/orders/orders/orders.service';
+import {
+ConfigService
+} from '@nestjs/config';
+import {
+OrdersService
+} from 'src/orders/orders/orders.service';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -86,7 +90,9 @@ export class PaymentsService {
 					event.data.object.id,
 					true,
 				);
-				console.log({ paymentIntent: event.data.object.id });
+				console.log({
+paymentIntent: event.data.object.id
+});
 				break;
 			case 'payment_intent.payment_failed':
 				await this.ordersService.orderStatusChange(

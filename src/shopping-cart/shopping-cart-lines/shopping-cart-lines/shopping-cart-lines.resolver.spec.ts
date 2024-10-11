@@ -1,5 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ShoppingCartLinesResolver } from './shopping-cart-lines.resolver';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	ShoppingCartLinesResolver
+} from './shopping-cart-lines.resolver';
 
 describe('ShoppingCartLinesResolver', () => {
 	let resolver: ShoppingCartLinesResolver;

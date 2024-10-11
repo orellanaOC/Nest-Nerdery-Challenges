@@ -7,7 +7,9 @@ import {
 	Req,
 	Res,
 } from '@nestjs/common';
-import { PaymentsService } from './payments.service';
+import {
+PaymentsService
+} from './payments.service';
 import {
 	ApiBadRequestResponse,
 	ApiHeader,
@@ -15,7 +17,9 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import {
+Request, Response
+} from 'express';
 
 @Controller('payments')
 @ApiTags('payments')
@@ -25,7 +29,9 @@ export class PaymentsController {
 	@Post('webhooks')
 	@HttpCode(HttpStatus.OK)
 	// @ApiExcludeEndpoint()
-	@ApiOperation({ summary: 'Handle Stripe webhook events (not for testing)' })
+	@ApiOperation({
+summary: 'Handle Stripe webhook events (not for testing)'
+})
 	@ApiHeader({
 		name: 'stripe-signature',
 		required: true,
@@ -36,18 +42,22 @@ export class PaymentsController {
 		description: 'Webhook event processed successfully.',
 	})
 	@ApiBadRequestResponse({
-		description: 'Invalid webhook signature or payload.',
-	})
+description: 'Invalid webhook signature or payload.',
+})
 	async orderStatus(@Req() req: Request, @Res() res: Response) {
 		const sig = req.headers['stripe-signature'];
 		const signature = Array.isArray(sig) ? sig[0] : sig;
-		console.log({ sig });
+		console.log({
+sig
+});
 		let event;
 		try {
 			event = this.paymentsService.constructEvent(req.body, signature);
 			await this.paymentsService.handleWebhookEvent(event);
 
-			return res.status(HttpStatus.OK).send({ received: true });
+			return res.status(HttpStatus.OK).send({
+received: true
+});
 		} catch (error) {
 			return res
 				.status(HttpStatus.BAD_REQUEST)

@@ -1,8 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { IsInt, IsString } from 'class-validator';
+import {
+ ObjectType, Field, Int 
+} from '@nestjs/graphql';
+import {
+IsInt, IsString
+} from 'class-validator';
 
 @ObjectType()
 export class Category {

@@ -1,7 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersResolver } from './orders.resolver';
-import { OrdersService } from './orders.service';
-import { PrismaService } from 'prisma/prisma/prisma.service';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	OrdersResolver
+} from './orders.resolver';
+import {
+	OrdersService
+} from './orders.service';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
 
 const mockPrismaService = {};
 
@@ -16,8 +24,12 @@ describe('OrdersResolver', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				OrdersResolver,
-				{ provide: OrdersService, useValue: mockOrdersService },
-				{ provide: PrismaService, useValue: mockPrismaService },
+				{
+					provide: OrdersService, useValue: mockOrdersService
+				},
+				{
+					provide: PrismaService, useValue: mockPrismaService
+				},
 			],
 		}).compile();
 

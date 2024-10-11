@@ -1,8 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Product } from 'src/products/products/entities/product.entity';
+import {
+ ObjectType, Field, Int 
+} from '@nestjs/graphql';
+import {
+Product
+} from 'src/products/products/entities/product.entity';
 
 @ObjectType()
 export class OrderLine {
