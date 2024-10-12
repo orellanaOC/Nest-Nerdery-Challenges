@@ -1,6 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma/prisma.service';
-import { Category } from './entities/category.entity';
+import {
+	Injectable, NotFoundException
+} from '@nestjs/common';
+import {
+	PrismaService
+} from '../../../prisma/prisma/prisma.service';
+import {
+	Category
+} from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -8,7 +14,9 @@ export class CategoriesService {
 
 	async findOne(id: number): Promise<Category> {
 		const category = await this.prisma.category.findUnique({
-			where: { id },
+			where: {
+				id
+			},
 		});
 
 		if (!category) {

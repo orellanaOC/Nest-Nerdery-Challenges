@@ -1,12 +1,27 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ShoppingCartResolver } from './shopping-cart.resolver';
+import {
+	Test, TestingModule
+} from '@nestjs/testing';
+import {
+	ShoppingCartsService
+} from './shopping-cart.service';
+import {
+	ShoppingCartResolver
+} from './shopping-cart.resolver';
 
-describe('CartsResolver', () => {
+const mockShoppingCartsService = {};
+
+describe('ShoppingCartsResolver', () => {
 	let resolver: ShoppingCartResolver;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [ShoppingCartResolver],
+			providers: [
+				ShoppingCartResolver,
+				{
+					provide: ShoppingCartsService,
+					useValue: mockShoppingCartsService,
+				},
+			],
 		}).compile();
 
 		resolver = module.get<ShoppingCartResolver>(ShoppingCartResolver);

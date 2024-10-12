@@ -1,11 +1,27 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
-import { PicturesService } from './pictures.service';
-import { Picture } from './entities/picture.entity';
-import { CreatePictureDto } from './dto/create-picture.dto';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
-import { RolesGuard } from 'src/auth/guards/role.guard';
+import {
+	Resolver, Mutation, Args 
+} from '@nestjs/graphql';
+import {
+	PicturesService
+} from './pictures.service';
+import {
+	Picture
+} from './entities/picture.entity';
+import {
+	CreatePictureDto
+} from './dto/create-picture.dto';
+import {
+	Roles
+} from 'src/auth/decorators/roles.decorator';
+import {
+	UseGuards
+} from '@nestjs/common';
+import {
+	GqlAuthGuard
+} from 'src/auth/guards/gql-auth.guard';
+import {
+	RolesGuard
+} from 'src/auth/guards/role.guard';
 
 @Resolver(() => Picture)
 export class PicturesResolver {

@@ -1,9 +1,21 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { ShoppingCart } from '../entities/shopping-cart.entity';
-import { ShoppingCartsService } from './shopping-cart.service';
-import { ShoppingCartLineInput } from '../shopping-cart-lines/dto/shopping-cart-line-input.dto';
-import { BadRequestException, UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import {
+	Args, Context, Mutation, Query, Resolver 
+} from '@nestjs/graphql';
+import {
+	ShoppingCart
+} from '../entities/shopping-cart.entity';
+import {
+	ShoppingCartsService
+} from './shopping-cart.service';
+import {
+	ShoppingCartLineInput
+} from '../shopping-cart-lines/dto/shopping-cart-line-input.dto';
+import {
+	BadRequestException, UseGuards
+} from '@nestjs/common';
+import {
+	GqlAuthGuard
+} from 'src/auth/guards/gql-auth.guard';
 
 @Resolver()
 export class ShoppingCartResolver {
@@ -13,7 +25,9 @@ export class ShoppingCartResolver {
 	@UseGuards(GqlAuthGuard)
 	async myShoppingCart(@Context() context: any): Promise<ShoppingCart> {
 		try {
-			const { user } = context.req;
+			const {
+				user
+			} = context.req;
 
 			return this.shoppingCartService.getShoppingCartByUserId(
 				user.userId,
@@ -31,7 +45,9 @@ export class ShoppingCartResolver {
 		@Context() context: any,
 	): Promise<ShoppingCart> {
 		try {
-			const { user } = context.req;
+			const {
+				user
+			} = context.req;
 
 			return await this.shoppingCartService.updateShoppingCart(
 				user.userId,

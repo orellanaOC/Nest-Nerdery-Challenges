@@ -2,7 +2,7 @@
 /* eslint-disable indent */
 
 import {
- ObjectType, Field, Int, registerEnumType 
+ ObjectType, Field, Int 
 } from '@nestjs/graphql';
 import {
 OrderLine
@@ -11,13 +11,8 @@ import {
 OrderStatus
 } from '@prisma/client';
 
-registerEnumType(OrderStatus, {
-	name: 'OrderStatus',
-	description:
-		'Represents the current state of an order, indicating whether it is pending, successfully completed, or failed due to an issue.',
-});
 @ObjectType()
-export class Order {
+export class OrderResponse {
 	@Field(() => Int)
 	id: number;
 
@@ -29,9 +24,6 @@ export class Order {
 
 	@Field(() => Int)
 	total: number;
-
-	@Field(() => String)
-	paymentIntentId: string;
 
 	@Field(() => [OrderLine], {
 nullable: 'items'

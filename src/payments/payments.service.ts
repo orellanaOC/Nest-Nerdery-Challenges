@@ -5,8 +5,12 @@ import {
 	Inject,
 	Injectable,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { OrdersService } from 'src/orders/orders/orders.service';
+import {
+ConfigService
+} from '@nestjs/config';
+import {
+OrdersService
+} from 'src/orders/orders/orders.service';
 import Stripe from 'stripe';
 
 @Injectable()

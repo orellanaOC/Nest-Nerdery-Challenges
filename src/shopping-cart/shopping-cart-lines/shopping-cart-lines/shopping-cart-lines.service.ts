@@ -1,8 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma/prisma.service';
-import { ShoppingCartLine } from '../entities/shopping-cart-line.entity';
-import { ShoppingCartLineInput } from '../dto/shopping-cart-line-input.dto';
-import { ProductsService } from 'src/products/products/products.service';
+import {
+	Injectable
+} from '@nestjs/common';
+import {
+	PrismaService
+} from 'prisma/prisma/prisma.service';
+import {
+	ShoppingCartLine
+} from '../entities/shopping-cart-line.entity';
+import {
+	ShoppingCartLineInput
+} from '../dto/shopping-cart-line-input.dto';
+import {
+	ProductsService
+} from 'src/products/products/products.service';
 
 @Injectable()
 export class ShoppingCartLinesService {
@@ -27,15 +37,21 @@ export class ShoppingCartLinesService {
 			// Delete line if product already exists and quantity is 0
 			if (existingLine) {
 				await this.prisma.shoppingCartLine.delete({
-					where: { id: existingLine.id },
+					where: {
+						id: existingLine.id
+					},
 				});
 			}
 		} else {
 			// Update the quantity of the line if the product already exists
 			if (existingLine) {
 				await this.prisma.shoppingCartLine.update({
-					where: { id: existingLine.id },
-					data: { productQuantity },
+					where: {
+						id: existingLine.id
+					},
+					data: {
+						productQuantity
+					},
 				});
 			} else {
 				// Add a new line if the product doesn't exist in the cart
@@ -56,7 +72,9 @@ export class ShoppingCartLinesService {
 		shoppingCartId: number,
 	): Promise<ShoppingCartLine[]> {
 		const lines = await this.prisma.shoppingCartLine.findMany({
-			where: { shoppingCartId },
+			where: {
+				shoppingCartId
+			},
 			include: {
 				product: {
 					include: {

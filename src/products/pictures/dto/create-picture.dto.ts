@@ -1,16 +1,24 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable indent */
 
-import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import {
+ InputType, Field, Int 
+} from '@nestjs/graphql';
+import {
+IsNotEmpty, IsString
+} from 'class-validator';
 
 @InputType()
 export class CreatePictureDto {
-    @Field(() => Int, { nullable: false })
-    productId: number;
+	@Field(() => Int, {
+nullable: false
+})
+	productId: number;
 
-    @Field(() => String, { nullable: false })
+	@Field(() => String, {
+nullable: false
+})
 	@IsNotEmpty()
 	@IsString()
-    imageBase64: string;
+	imageBase64: string;
 }

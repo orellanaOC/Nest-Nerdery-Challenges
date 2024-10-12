@@ -1,6 +1,51 @@
 {
+  "arrowParens": "always",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "semi": false,
+  "experimentalTernaries": false,
   "singleQuote": true,
-  "trailingComma": "all",
+  "jsxSingleQuote": true,
+  "quoteProps": "as-needed",
+  "trailingComma": "none",
+  "singleAttributePerLine": true,
+  "htmlWhitespaceSensitivity": "css",
+  "vueIndentScriptAndStyle": false,
+  "proseWrap": "never",
+  "insertPragma": false,
+  "printWidth": 80,
+  "requirePragma": true,
   "tabWidth": 4,
-  "useTabs": true
+  "useTabs": true,
+  "embeddedLanguageFormatting": "auto",
+  "importOrder": [
+    "^@nestjs/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": [
+    "prettier-plugin-organize-imports"
+  ],
+  "overrides": [
+    {
+      "files": "*.ts",
+      "options": {
+        "importOrderParserPlugins": [
+          "typescript",
+          "decorators-legacy"
+        ],
+        "importOrderCaseInsensitive": true,
+        "importOrderGroupNamespaceSpecifiers": true,
+        "importOrderSeparation": true,
+        "importOrder": [
+          "^@nestjs/(.*)$",
+          "^[./]"
+        ],
+        "importOrderBuiltinModulesToTop": true,
+        "importOrderCombineTypeAndValueImports": true,
+        "importOrderMergeDuplicateImports": true
+      }
+    }
+  ]
 }
