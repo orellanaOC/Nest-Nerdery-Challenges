@@ -22,10 +22,13 @@ import {
 import {
 	OrderLine
 } from '../order-lines/entities/order-line.entity';
+import { OrderStatus } from '@prisma/client';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 const mockPrismaService = {
 	order: {
 		create: jest.fn(),
+		update: jest.fn(),
 		findUnique: jest.fn(),
 		findMany: jest.fn(),
 	},
@@ -53,6 +56,8 @@ describe('OrdersService', () => {
 	let service: OrdersService;
 
 	beforeEach(async () => {
+		jest.clearAllMocks();
+	
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				OrdersService,
@@ -160,6 +165,80 @@ describe('OrdersService', () => {
 		});
 	});
 
+	describe('orderStatusChange', () => {
+		it('should update order status to SUCCEEDED and clear shopping cart if successful', async () => {
+			const paymentIntentId = 'test-payment-intent-id';
+			const order = {
+				id: 1,
+				userId: 123,
+				status: OrderStatus.PENDING,
+				total: 400,
+				paymentIntentId: paymentIntentId,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				lines: [],
+			};
+
+			jest.spyOn(service, 'findOneByPaymentIntentId').mockResolvedValue(order);
+
+			mockPrismaService.order.update.mockResolvedValue({
+				...order,
+				status: OrderStatus.SUCCEEDED,
+			});
+
+			const result = await service.orderStatusChange(paymentIntentId, true);
+
+			expect(service.findOneByPaymentIntentId).toHaveBeenCalledWith(paymentIntentId);
+
+			expect(mockShoppingCartsService.clearShoppingCart).toHaveBeenCalledWith(order.userId);
+
+			expect(result).toEqual({
+				...order,
+				status: OrderStatus.SUCCEEDED,
+			});
+		});
+
+		it('should update order status to FAILED if unsuccessful', async () => {
+			const paymentIntentId = 'test-payment-intent-id';
+			const order = {
+				id: 1,
+				userId: 123,
+				status: OrderStatus.PENDING,
+				total: 400,
+				paymentIntentId: paymentIntentId,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				lines: [],
+			};
+
+			jest.spyOn(service, 'findOneByPaymentIntentId').mockResolvedValue(order);
+
+			mockPrismaService.order.update.mockResolvedValue({
+				...order,
+				status: OrderStatus.FAILED,
+			});
+
+			const result = await service.orderStatusChange(paymentIntentId, false);
+
+			expect(service.findOneByPaymentIntentId).toHaveBeenCalledWith(paymentIntentId);
+
+			expect(mockShoppingCartsService.clearShoppingCart).not.toHaveBeenCalled();
+
+			expect(result).toEqual({
+				...order,
+				status: OrderStatus.FAILED,
+			});
+		});
+
+		it('should throw NotFoundException if order is not found', async () => {
+			const paymentIntentId = 'test-payment-intent-id';
+
+			jest.spyOn(service, 'findOneByPaymentIntentId').mockResolvedValue(null);
+
+			await expect(service.orderStatusChange(paymentIntentId, true)).rejects.toThrow(NotFoundException);
+		});
+	});
+
 	describe('findOneByPaymentIntentId', () => {
 		it('should return an order by payment intent ID', async () => {
 			const paymentIntentId = 'payment_intent_id';
@@ -231,4 +310,182 @@ describe('OrdersService', () => {
 			});
 		});
 	});
+
+	describe('findOrderById', () => {
+		it('should return an order by ID for authorized user', async () => {
+			const orderId = 1;
+			const userId = 123;
+			const roleId = 1;
+			const mockOrder = {
+				id: orderId,
+				userId,
+				status: 'PENDING',
+				total: 400,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				lines: [],
+			};
+	
+			mockPrismaService.order.findUnique.mockResolvedValue(mockOrder);
+			mockOrderLinesService.getLinesByOrderId.mockResolvedValue([]);
+	
+			const result = await service.findOrderById(orderId, userId, roleId);
+	
+			expect(result).toEqual({
+				id: orderId,
+				userId: mockOrder.userId,
+				status: mockOrder.status,
+				total: mockOrder.total,
+				createdAt: mockOrder.createdAt,
+				updatedAt: mockOrder.updatedAt,
+				lines: [],
+			});
+	
+			expect(mockPrismaService.order.findUnique).toHaveBeenCalledWith({
+				where: { id: orderId },
+				include: { lines: true },
+			});
+		});
+	
+		it('should throw NotFoundException if the order does not exist', async () => {
+			const orderId = 1;
+			const userId = 123;
+			const roleId = 1;
+	
+			mockPrismaService.order.findUnique.mockResolvedValue(null);
+	
+			await expect(service.findOrderById(orderId, userId, roleId)).rejects.toThrow(NotFoundException);
+	
+			expect(mockPrismaService.order.findUnique).toHaveBeenCalledWith({
+				where: { id: orderId },
+				include: { lines: true },
+			});
+		});
+	
+		it('should throw UnauthorizedException if the user is not the owner and not an admin', async () => {
+			const orderId = 1;
+			const userId = 123;
+			const roleId = 1;
+			const mockOrder = {
+				id: orderId,
+				userId: 456,
+				status: 'PENDING',
+				total: 400,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				lines: [],
+			};
+	
+			mockPrismaService.order.findUnique.mockResolvedValue(mockOrder);
+	
+			await expect(service.findOrderById(orderId, userId, roleId)).rejects.toThrow(UnauthorizedException);
+	
+			expect(mockPrismaService.order.findUnique).toHaveBeenCalledWith({
+				where: { id: orderId },
+				include: { lines: true },
+			});
+		});
+	});
+	
+	describe('orders', () => {
+		it('should return a paginated list of orders for a user', async () => {
+			const userId = 123;
+			const filter = { status: OrderStatus.SUCCEEDED, pagination: { first: 10 }, userId };
+	
+			const mockOrders = [
+				{
+					id: 1,
+					userId,
+					status: OrderStatus.SUCCEEDED,
+					total: 400,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					lines: [],
+				},
+			];
+	
+			mockPrismaService.order.findMany.mockResolvedValue(mockOrders);
+			mockPaginationService.paginate.mockResolvedValue({ edges: mockOrders, pageInfo: {} });
+
+			const result = await service.orders(filter, userId);
+
+			expect(result).toEqual({
+				edges: mockOrders,
+				pageInfo: expect.any(Object),
+			});
+
+			expect(mockPaginationService.paginate).toHaveBeenCalledWith(
+				expect.any(Function),
+				filter.pagination,
+				'id',
+				{
+					userId: filter.userId,
+					status: filter.status,
+				},
+				{ createdAt: 'asc' },
+				{
+					lines: {
+						include: {
+							product: {
+								include: {
+									picture: true,
+									category: true,
+								},
+							},
+						},
+					},
+				}
+			);
+		});
+	
+		it('should return orders for the logged in user if userIdLogged is provided', async () => {
+			const userIdLogged = 123;
+			const filter = { status: OrderStatus.SUCCEEDED, pagination: { first: 10 } };
+	
+			const mockOrders = [
+				{
+					id: 1,
+					userId: userIdLogged,
+					status: OrderStatus.SUCCEEDED,
+					total: 400,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					lines: [],
+				},
+			];
+	
+			mockPrismaService.order.findMany.mockResolvedValue(mockOrders);
+			mockPaginationService.paginate.mockResolvedValue({ edges: mockOrders, pageInfo: {} });
+	
+			const result = await service.orders(filter, userIdLogged);
+	
+			expect(result).toEqual({
+				edges: mockOrders,
+				pageInfo: expect.any(Object),
+			});
+	
+			expect(mockPaginationService.paginate).toHaveBeenCalledWith(
+				expect.any(Function),
+				filter.pagination,
+				'id',
+				{
+					userId: userIdLogged,
+					status: filter.status,
+				},
+				{ createdAt: 'asc' },
+				{
+					lines: {
+						include: {
+							product: {
+								include: {
+									picture: true,
+									category: true,
+								},
+							},
+						},
+					},
+				}
+			);
+		});
+	});	
 });
