@@ -90,9 +90,7 @@ export class PaymentsService {
 					event.data.object.id,
 					true,
 				);
-				console.log({
-paymentIntent: event.data.object.id
-});
+				console.log({ paymentIntent: event.data.object.id });
 				break;
 			case 'payment_intent.payment_failed':
 				await this.ordersService.orderStatusChange(
