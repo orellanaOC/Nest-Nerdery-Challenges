@@ -52,7 +52,6 @@ export class ShoppingCartsService {
 		userId: number,
 		shoppingCartLineInput: ShoppingCartLineInput,
 	): Promise<ShoppingCart> {
-		// Get the shopping cart of the user
 		const cart = await this.prismaService.shoppingCart.findUnique({
 			where: {
 				userId
@@ -65,7 +64,6 @@ export class ShoppingCartsService {
 			);
 		}
 
-		// Update the shopping cart lines using the shoppingCartLinesService
 		const updatedLines =
 			await this.shoppingCartLinesService.updateShoppingCartLines(
 				userId,
@@ -87,7 +85,6 @@ export class ShoppingCartsService {
 			},
 		});
 
-		// Return the updated shopping cart with the new lines
 		return {
 			userId: cart.userId,
 			totalAmount,
