@@ -19,6 +19,16 @@ Eco-Friendly Store is a sustainable and eco-friendly e-commerce platform built w
 - **Stripe**: A payment processing platform that provides APIs for online transactions.
 - **PostgreSQL**: A powerful, open-source relational database system.
 
+## Project Structure Diagram
+This diagram visually represents the project's directory structure, highlighting the organization of folders and important files. It helps to understand the layout of the codebase and locate specific components efficiently.
+<img width="1139" alt="Screenshot 2024-10-14 at 3 38 32 PM" src="https://github.com/user-attachments/assets/b938d5aa-645f-4d25-809b-f55bbcc0927c">
+
+
+## Database Diagram
+The database diagram represents the structure of the database, including tables, relationships, and key attributes. It serves as a blueprint for understanding the data model and how data is organized within the application.
+<img width="1137" alt="Screenshot 2024-10-14 at 3 33 00 PM" src="https://github.com/user-attachments/assets/7f020871-57e4-4863-88f2-eac3eb4f95e2">
+
+
 ## Installation
 
 ### Prerequisites
